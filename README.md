@@ -16,12 +16,9 @@ The REST API documentation can be found on [simplechecks.com](https://simplechec
 ## Installation
 
 ```sh
-# install from the production repo
-pip install git+ssh://git@github.com/simplechecks/simplechecks-sdk-python.git
+# install from PyPI
+pip install simplechecks
 ```
-
-> [!NOTE]
-> Once this package is [published to PyPI](https://www.stainless.com/docs/guides/publish), this will become: `pip install simplechecks`
 
 ## Usage
 
@@ -75,8 +72,8 @@ By default, the async client uses `httpx` for HTTP requests. However, for improv
 You can enable this by installing `aiohttp`:
 
 ```sh
-# install from the production repo
-pip install 'simplechecks[aiohttp] @ git+ssh://git@github.com/simplechecks/simplechecks-sdk-python.git'
+# install from PyPI
+pip install simplechecks[aiohttp]
 ```
 
 Then you can enable it by instantiating the client with `http_client=DefaultAioHttpClient()`:
