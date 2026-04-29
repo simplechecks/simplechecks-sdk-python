@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.0.3 (2026-04-29)
+
+Full Changelog: [v0.0.2...v0.0.3](https://github.com/simplechecks/simplechecks-sdk-python/compare/v0.0.2...v0.0.3)
+
+### Chores
+
+* update SDK settings ([a742d33](https://github.com/simplechecks/simplechecks-sdk-python/commit/a742d33bfba514dfe04bb9122a16c1c56c1a0e4f))
+* update SDK settings ([591587a](https://github.com/simplechecks/simplechecks-sdk-python/commit/591587af38258915cc9edcec95add60654eb824b))
+
 ## 0.0.2 (2026-04-29)
 
 Full Changelog: [v0.0.1...v0.0.2](https://github.com/simplechecks/simplechecks-sdk-python/compare/v0.0.1...v0.0.2)
