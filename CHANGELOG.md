@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.0.4 (2026-05-04)
+
+Full Changelog: [v0.0.3...v0.0.4](https://github.com/simplechecks/simplechecks-sdk-python/compare/v0.0.3...v0.0.4)
+
+### Chores
+
+* **internal:** reformat pyproject.toml ([61692ad](https://github.com/simplechecks/simplechecks-sdk-python/commit/61692adaf94597f84c2c8cc3a451ce6276dd3471))
+
 ## 0.0.3 (2026-04-29)
 
 Full Changelog: [v0.0.2...v0.0.3](https://github.com/simplechecks/simplechecks-sdk-python/compare/v0.0.2...v0.0.3)
