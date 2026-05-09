@@ -12,6 +12,7 @@ from . import _exceptions
 from ._qs import Querystring
 from ._types import (
     Omit,
+    Headers,
     Timeout,
     NotGiven,
     Transport,
@@ -63,12 +64,14 @@ ENVIRONMENTS: Dict[str, str] = {
 
 class SimpleChecks(SyncAPIClient):
     # client options
+    api_key: str | None
 
     _environment: Literal["production", "local"] | NotGiven
 
     def __init__(
         self,
         *,
+        api_key: str | None = None,
         environment: Literal["production", "local"] | NotGiven = not_given,
         base_url: str | httpx.URL | None | NotGiven = not_given,
         timeout: float | Timeout | None | NotGiven = not_given,
@@ -89,7 +92,14 @@ class SimpleChecks(SyncAPIClient):
         # part of our public interface in the future.
         _strict_response_validation: bool = False,
     ) -> None:
-        """Construct a new synchronous SimpleChecks client instance."""
+        """Construct a new synchronous SimpleChecks client instance.
+
+        This automatically infers the `api_key` argument from the `SIMPLECHECKS_API_KEY` environment variable if it is not provided.
+        """
+        if api_key is None:
+            api_key = os.environ.get("SIMPLECHECKS_API_KEY")
+        self.api_key = api_key
+
         self._environment = environment
 
         base_url_env = os.environ.get("SIMPLE_CHECKS_BASE_URL")
@@ -193,6 +203,14 @@ class SimpleChecks(SyncAPIClient):
 
     @property
     @override
+    def auth_headers(self) -> dict[str, str]:
+        api_key = self.api_key
+        if api_key is None:
+            return {}
+        return {"Authorization": f"Bearer {api_key}"}
+
+    @property
+    @override
     def default_headers(self) -> dict[str, str | Omit]:
         return {
             **super().default_headers,
@@ -200,9 +218,19 @@ class SimpleChecks(SyncAPIClient):
             **self._custom_headers,
         }
 
+    @override
+    def _validate_headers(self, headers: Headers, custom_headers: Headers) -> None:
+        if headers.get("Authorization") or isinstance(custom_headers.get("Authorization"), Omit):
+            return
+
+        raise TypeError(
+            '"Could not resolve authentication method. Expected the api_key to be set. Or for the `Authorization` headers to be explicitly omitted"'
+        )
+
     def copy(
         self,
         *,
+        api_key: str | None = None,
         environment: Literal["production", "local"] | None = None,
         base_url: str | httpx.URL | None = None,
         timeout: float | Timeout | None | NotGiven = not_given,
@@ -237,6 +265,7 @@ class SimpleChecks(SyncAPIClient):
 
         http_client = http_client or self._client
         return self.__class__(
+            api_key=api_key or self.api_key,
             base_url=base_url or self.base_url,
             environment=environment or self._environment,
             timeout=self.timeout if isinstance(timeout, NotGiven) else timeout,
@@ -287,12 +316,14 @@ class SimpleChecks(SyncAPIClient):
 
 class AsyncSimpleChecks(AsyncAPIClient):
     # client options
+    api_key: str | None
 
     _environment: Literal["production", "local"] | NotGiven
 
     def __init__(
         self,
         *,
+        api_key: str | None = None,
         environment: Literal["production", "local"] | NotGiven = not_given,
         base_url: str | httpx.URL | None | NotGiven = not_given,
         timeout: float | Timeout | None | NotGiven = not_given,
@@ -313,7 +344,14 @@ class AsyncSimpleChecks(AsyncAPIClient):
         # part of our public interface in the future.
         _strict_response_validation: bool = False,
     ) -> None:
-        """Construct a new async AsyncSimpleChecks client instance."""
+        """Construct a new async AsyncSimpleChecks client instance.
+
+        This automatically infers the `api_key` argument from the `SIMPLECHECKS_API_KEY` environment variable if it is not provided.
+        """
+        if api_key is None:
+            api_key = os.environ.get("SIMPLECHECKS_API_KEY")
+        self.api_key = api_key
+
         self._environment = environment
 
         base_url_env = os.environ.get("SIMPLE_CHECKS_BASE_URL")
@@ -417,6 +455,14 @@ class AsyncSimpleChecks(AsyncAPIClient):
 
     @property
     @override
+    def auth_headers(self) -> dict[str, str]:
+        api_key = self.api_key
+        if api_key is None:
+            return {}
+        return {"Authorization": f"Bearer {api_key}"}
+
+    @property
+    @override
     def default_headers(self) -> dict[str, str | Omit]:
         return {
             **super().default_headers,
@@ -424,9 +470,19 @@ class AsyncSimpleChecks(AsyncAPIClient):
             **self._custom_headers,
         }
 
+    @override
+    def _validate_headers(self, headers: Headers, custom_headers: Headers) -> None:
+        if headers.get("Authorization") or isinstance(custom_headers.get("Authorization"), Omit):
+            return
+
+        raise TypeError(
+            '"Could not resolve authentication method. Expected the api_key to be set. Or for the `Authorization` headers to be explicitly omitted"'
+        )
+
     def copy(
         self,
         *,
+        api_key: str | None = None,
         environment: Literal["production", "local"] | None = None,
         base_url: str | httpx.URL | None = None,
         timeout: float | Timeout | None | NotGiven = not_given,
@@ -461,6 +517,7 @@ class AsyncSimpleChecks(AsyncAPIClient):
 
         http_client = http_client or self._client
         return self.__class__(
+            api_key=api_key or self.api_key,
             base_url=base_url or self.base_url,
             environment=environment or self._environment,
             timeout=self.timeout if isinstance(timeout, NotGiven) else timeout,

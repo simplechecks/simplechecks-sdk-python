@@ -25,34 +25,43 @@ pip install simplechecks
 The full API of this library can be found in [api.md](api.md).
 
 ```python
+import os
 from simplechecks import SimpleChecks
 
 client = SimpleChecks(
+    api_key=os.environ.get("SIMPLECHECKS_API_KEY"),  # This is the default and can be omitted
     # defaults to "production".
     environment="local",
 )
 
-account = client.account.retrieve()
-print(account.typeid)
+checks = client.checks.list()
+print(checks.checks)
 ```
+
+While you can provide an `api_key` keyword argument,
+we recommend using [python-dotenv](https://pypi.org/project/python-dotenv/)
+to add `SIMPLECHECKS_API_KEY="My API Key"` to your `.env` file
+so that your API Key is not stored in source control.
 
 ## Async usage
 
 Simply import `AsyncSimpleChecks` instead of `SimpleChecks` and use `await` with each API call:
 
 ```python
+import os
 import asyncio
 from simplechecks import AsyncSimpleChecks
 
 client = AsyncSimpleChecks(
+    api_key=os.environ.get("SIMPLECHECKS_API_KEY"),  # This is the default and can be omitted
     # defaults to "production".
     environment="local",
 )
 
 
 async def main() -> None:
-    account = await client.account.retrieve()
-    print(account.typeid)
+    checks = await client.checks.list()
+    print(checks.checks)
 
 
 asyncio.run(main())
@@ -74,6 +83,7 @@ pip install simplechecks[aiohttp]
 Then you can enable it by instantiating the client with `http_client=DefaultAioHttpClient()`:
 
 ```python
+import os
 import asyncio
 from simplechecks import DefaultAioHttpClient
 from simplechecks import AsyncSimpleChecks
@@ -81,10 +91,11 @@ from simplechecks import AsyncSimpleChecks
 
 async def main() -> None:
     async with AsyncSimpleChecks(
+        api_key=os.environ.get("SIMPLECHECKS_API_KEY"),  # This is the default and can be omitted
         http_client=DefaultAioHttpClient(),
     ) as client:
-        account = await client.account.retrieve()
-        print(account.typeid)
+        checks = await client.checks.list()
+        print(checks.checks)
 
 
 asyncio.run(main())
