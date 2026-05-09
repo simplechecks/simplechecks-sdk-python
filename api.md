@@ -15,25 +15,39 @@ Methods:
 Types:
 
 ```python
-from simplechecks.types import Check
+from simplechecks.types import AlertConfig, Check
 ```
 
 Methods:
 
-- <code title="delete /v1/checks/{id}">client.checks.<a href="./src/simplechecks/resources/checks.py">delete</a>(id) -> None</code>
+- <code title="delete /v1/checks/{id}">client.checks.<a href="./src/simplechecks/resources/checks/checks.py">delete</a>(id) -> None</code>
+
+## Alerts
+
+Methods:
+
+- <code title="delete /v1/checks/{id}/alerts">client.checks.alerts.<a href="./src/simplechecks/resources/checks/alerts.py">delete</a>(id) -> None</code>
 
 # Runs
 
 Types:
 
 ```python
-from simplechecks.types import Run, RunListResponse
+from simplechecks.types import (
+    Aggregate,
+    Run,
+    RunListResponse,
+    RunAggregatesResponse,
+    RunLogsResponse,
+)
 ```
 
 Methods:
 
 - <code title="get /v1/runs/{id}">client.runs.<a href="./src/simplechecks/resources/runs.py">retrieve</a>(id) -> <a href="./src/simplechecks/types/run.py">Run</a></code>
 - <code title="get /v1/runs">client.runs.<a href="./src/simplechecks/resources/runs.py">list</a>(\*\*<a href="src/simplechecks/types/run_list_params.py">params</a>) -> <a href="./src/simplechecks/types/run_list_response.py">RunListResponse</a></code>
+- <code title="get /v1/runs/aggregates">client.runs.<a href="./src/simplechecks/resources/runs.py">aggregates</a>(\*\*<a href="src/simplechecks/types/run_aggregates_params.py">params</a>) -> <a href="./src/simplechecks/types/run_aggregates_response.py">RunAggregatesResponse</a></code>
+- <code title="get /v1/runs/{id}/logs">client.runs.<a href="./src/simplechecks/resources/runs.py">logs</a>(id) -> JSONLDecoder[RunLogsResponse]</code>
 
 # Keys
 

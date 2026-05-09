@@ -4,42 +4,42 @@ from __future__ import annotations
 
 import httpx
 
-from .._types import Body, Query, Headers, NoneType, NotGiven, not_given
-from .._utils import path_template
-from .._compat import cached_property
-from .._resource import SyncAPIResource, AsyncAPIResource
-from .._response import (
+from ..._types import Body, Query, Headers, NoneType, NotGiven, not_given
+from ..._utils import path_template
+from ..._compat import cached_property
+from ..._resource import SyncAPIResource, AsyncAPIResource
+from ..._response import (
     to_raw_response_wrapper,
     to_streamed_response_wrapper,
     async_to_raw_response_wrapper,
     async_to_streamed_response_wrapper,
 )
-from .._base_client import make_request_options
+from ..._base_client import make_request_options
 
-__all__ = ["ChecksResource", "AsyncChecksResource"]
+__all__ = ["AlertsResource", "AsyncAlertsResource"]
 
 
-class ChecksResource(SyncAPIResource):
-    """CRUD for synthetic-monitoring checks."""
+class AlertsResource(SyncAPIResource):
+    """Per-check alert configuration + test-fire endpoint (PR-Alerts/1)."""
 
     @cached_property
-    def with_raw_response(self) -> ChecksResourceWithRawResponse:
+    def with_raw_response(self) -> AlertsResourceWithRawResponse:
         """
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
         For more information, see https://www.github.com/simplechecks/simplechecks-sdk-python#accessing-raw-response-data-eg-headers
         """
-        return ChecksResourceWithRawResponse(self)
+        return AlertsResourceWithRawResponse(self)
 
     @cached_property
-    def with_streaming_response(self) -> ChecksResourceWithStreamingResponse:
+    def with_streaming_response(self) -> AlertsResourceWithStreamingResponse:
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
         For more information, see https://www.github.com/simplechecks/simplechecks-sdk-python#with_streaming_response
         """
-        return ChecksResourceWithStreamingResponse(self)
+        return AlertsResourceWithStreamingResponse(self)
 
     def delete(
         self,
@@ -52,9 +52,11 @@ class ChecksResource(SyncAPIResource):
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> None:
-        """Disables the check.
+        """Subsequent runs will not be evaluated for alerts.
 
-        Requires the `checks:write` scope.
+        State rows in `alert_state`
+        and `alert_location_state` cascade with the underlying check; deleting just the
+        config leaves them behind harmlessly. Requires the `checks:write` scope.
 
         Args:
           extra_headers: Send extra headers
@@ -69,7 +71,7 @@ class ChecksResource(SyncAPIResource):
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         extra_headers = {"Accept": "*/*", **(extra_headers or {})}
         return self._delete(
-            path_template("/v1/checks/{id}", id=id),
+            path_template("/v1/checks/{id}/alerts", id=id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -77,27 +79,27 @@ class ChecksResource(SyncAPIResource):
         )
 
 
-class AsyncChecksResource(AsyncAPIResource):
-    """CRUD for synthetic-monitoring checks."""
+class AsyncAlertsResource(AsyncAPIResource):
+    """Per-check alert configuration + test-fire endpoint (PR-Alerts/1)."""
 
     @cached_property
-    def with_raw_response(self) -> AsyncChecksResourceWithRawResponse:
+    def with_raw_response(self) -> AsyncAlertsResourceWithRawResponse:
         """
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
         For more information, see https://www.github.com/simplechecks/simplechecks-sdk-python#accessing-raw-response-data-eg-headers
         """
-        return AsyncChecksResourceWithRawResponse(self)
+        return AsyncAlertsResourceWithRawResponse(self)
 
     @cached_property
-    def with_streaming_response(self) -> AsyncChecksResourceWithStreamingResponse:
+    def with_streaming_response(self) -> AsyncAlertsResourceWithStreamingResponse:
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
         For more information, see https://www.github.com/simplechecks/simplechecks-sdk-python#with_streaming_response
         """
-        return AsyncChecksResourceWithStreamingResponse(self)
+        return AsyncAlertsResourceWithStreamingResponse(self)
 
     async def delete(
         self,
@@ -110,9 +112,11 @@ class AsyncChecksResource(AsyncAPIResource):
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> None:
-        """Disables the check.
+        """Subsequent runs will not be evaluated for alerts.
 
-        Requires the `checks:write` scope.
+        State rows in `alert_state`
+        and `alert_location_state` cascade with the underlying check; deleting just the
+        config leaves them behind harmlessly. Requires the `checks:write` scope.
 
         Args:
           extra_headers: Send extra headers
@@ -127,7 +131,7 @@ class AsyncChecksResource(AsyncAPIResource):
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         extra_headers = {"Accept": "*/*", **(extra_headers or {})}
         return await self._delete(
-            path_template("/v1/checks/{id}", id=id),
+            path_template("/v1/checks/{id}/alerts", id=id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -135,37 +139,37 @@ class AsyncChecksResource(AsyncAPIResource):
         )
 
 
-class ChecksResourceWithRawResponse:
-    def __init__(self, checks: ChecksResource) -> None:
-        self._checks = checks
+class AlertsResourceWithRawResponse:
+    def __init__(self, alerts: AlertsResource) -> None:
+        self._alerts = alerts
 
         self.delete = to_raw_response_wrapper(
-            checks.delete,
+            alerts.delete,
         )
 
 
-class AsyncChecksResourceWithRawResponse:
-    def __init__(self, checks: AsyncChecksResource) -> None:
-        self._checks = checks
+class AsyncAlertsResourceWithRawResponse:
+    def __init__(self, alerts: AsyncAlertsResource) -> None:
+        self._alerts = alerts
 
         self.delete = async_to_raw_response_wrapper(
-            checks.delete,
+            alerts.delete,
         )
 
 
-class ChecksResourceWithStreamingResponse:
-    def __init__(self, checks: ChecksResource) -> None:
-        self._checks = checks
+class AlertsResourceWithStreamingResponse:
+    def __init__(self, alerts: AlertsResource) -> None:
+        self._alerts = alerts
 
         self.delete = to_streamed_response_wrapper(
-            checks.delete,
+            alerts.delete,
         )
 
 
-class AsyncChecksResourceWithStreamingResponse:
-    def __init__(self, checks: AsyncChecksResource) -> None:
-        self._checks = checks
+class AsyncAlertsResourceWithStreamingResponse:
+    def __init__(self, alerts: AsyncAlertsResource) -> None:
+        self._alerts = alerts
 
         self.delete = async_to_streamed_response_wrapper(
-            checks.delete,
+            alerts.delete,
         )

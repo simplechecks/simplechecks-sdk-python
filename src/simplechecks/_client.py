@@ -38,9 +38,9 @@ if TYPE_CHECKING:
     from .resources import keys, runs, checks, account, balance, checkout_sessions
     from .resources.keys import KeysResource, AsyncKeysResource
     from .resources.runs import RunsResource, AsyncRunsResource
-    from .resources.checks import ChecksResource, AsyncChecksResource
     from .resources.account import AccountResource, AsyncAccountResource
     from .resources.balance import BalanceResource, AsyncBalanceResource
+    from .resources.checks.checks import ChecksResource, AsyncChecksResource
     from .resources.checkout_sessions import CheckoutSessionsResource, AsyncCheckoutSessionsResource
 
 __all__ = [
