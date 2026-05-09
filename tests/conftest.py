@@ -10,7 +10,7 @@ import httpx
 import pytest
 from pytest_asyncio import is_async_test
 
-from simplechecks import Simplechecks, AsyncSimplechecks, DefaultAioHttpClient
+from simplechecks import SimpleChecks, AsyncSimpleChecks, DefaultAioHttpClient
 from simplechecks._utils import is_dict
 
 if TYPE_CHECKING:
@@ -45,21 +45,19 @@ def pytest_collection_modifyitems(items: list[pytest.Function]) -> None:
 
 base_url = os.environ.get("TEST_API_BASE_URL", "http://127.0.0.1:4010")
 
-api_key = "My API Key"
-
 
 @pytest.fixture(scope="session")
-def client(request: FixtureRequest) -> Iterator[Simplechecks]:
+def client(request: FixtureRequest) -> Iterator[SimpleChecks]:
     strict = getattr(request, "param", True)
     if not isinstance(strict, bool):
         raise TypeError(f"Unexpected fixture parameter type {type(strict)}, expected {bool}")
 
-    with Simplechecks(base_url=base_url, api_key=api_key, _strict_response_validation=strict) as client:
+    with SimpleChecks(base_url=base_url, _strict_response_validation=strict) as client:
         yield client
 
 
 @pytest.fixture(scope="session")
-async def async_client(request: FixtureRequest) -> AsyncIterator[AsyncSimplechecks]:
+async def async_client(request: FixtureRequest) -> AsyncIterator[AsyncSimpleChecks]:
     param = getattr(request, "param", True)
 
     # defaults
@@ -78,7 +76,7 @@ async def async_client(request: FixtureRequest) -> AsyncIterator[AsyncSimplechec
     else:
         raise TypeError(f"Unexpected fixture parameter type {type(param)}, expected bool or dict")
 
-    async with AsyncSimplechecks(
-        base_url=base_url, api_key=api_key, _strict_response_validation=strict, http_client=http_client
+    async with AsyncSimpleChecks(
+        base_url=base_url, _strict_response_validation=strict, http_client=http_client
     ) as client:
         yield client

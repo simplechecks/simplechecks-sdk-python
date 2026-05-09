@@ -4,10 +4,10 @@ from datetime import datetime
 
 from .._models import BaseModel
 
-__all__ = ["AccountRetrieveResponse"]
+__all__ = ["Account"]
 
 
-class AccountRetrieveResponse(BaseModel):
+class Account(BaseModel):
     """Account profile + cached billing balance. Returned by GET /v1/account."""
 
     balance: int

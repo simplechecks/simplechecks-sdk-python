@@ -12,87 +12,87 @@ from simplechecks import SimpleChecks, AsyncSimpleChecks
 base_url = os.environ.get("TEST_API_BASE_URL", "http://127.0.0.1:4010")
 
 
-class TestChecks:
+class TestKeys:
     parametrize = pytest.mark.parametrize("client", [False, True], indirect=True, ids=["loose", "strict"])
 
     @parametrize
-    def test_method_delete(self, client: SimpleChecks) -> None:
-        check = client.checks.delete(
+    def test_method_revoke(self, client: SimpleChecks) -> None:
+        key = client.keys.revoke(
             "id",
         )
-        assert check is None
+        assert key is None
 
     @parametrize
-    def test_raw_response_delete(self, client: SimpleChecks) -> None:
-        response = client.checks.with_raw_response.delete(
+    def test_raw_response_revoke(self, client: SimpleChecks) -> None:
+        response = client.keys.with_raw_response.revoke(
             "id",
         )
 
         assert response.is_closed is True
         assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-        check = response.parse()
-        assert check is None
+        key = response.parse()
+        assert key is None
 
     @parametrize
-    def test_streaming_response_delete(self, client: SimpleChecks) -> None:
-        with client.checks.with_streaming_response.delete(
+    def test_streaming_response_revoke(self, client: SimpleChecks) -> None:
+        with client.keys.with_streaming_response.revoke(
             "id",
         ) as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
 
-            check = response.parse()
-            assert check is None
+            key = response.parse()
+            assert key is None
 
         assert cast(Any, response.is_closed) is True
 
     @parametrize
-    def test_path_params_delete(self, client: SimpleChecks) -> None:
+    def test_path_params_revoke(self, client: SimpleChecks) -> None:
         with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            client.checks.with_raw_response.delete(
+            client.keys.with_raw_response.revoke(
                 "",
             )
 
 
-class TestAsyncChecks:
+class TestAsyncKeys:
     parametrize = pytest.mark.parametrize(
         "async_client", [False, True, {"http_client": "aiohttp"}], indirect=True, ids=["loose", "strict", "aiohttp"]
     )
 
     @parametrize
-    async def test_method_delete(self, async_client: AsyncSimpleChecks) -> None:
-        check = await async_client.checks.delete(
+    async def test_method_revoke(self, async_client: AsyncSimpleChecks) -> None:
+        key = await async_client.keys.revoke(
             "id",
         )
-        assert check is None
+        assert key is None
 
     @parametrize
-    async def test_raw_response_delete(self, async_client: AsyncSimpleChecks) -> None:
-        response = await async_client.checks.with_raw_response.delete(
+    async def test_raw_response_revoke(self, async_client: AsyncSimpleChecks) -> None:
+        response = await async_client.keys.with_raw_response.revoke(
             "id",
         )
 
         assert response.is_closed is True
         assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-        check = await response.parse()
-        assert check is None
+        key = await response.parse()
+        assert key is None
 
     @parametrize
-    async def test_streaming_response_delete(self, async_client: AsyncSimpleChecks) -> None:
-        async with async_client.checks.with_streaming_response.delete(
+    async def test_streaming_response_revoke(self, async_client: AsyncSimpleChecks) -> None:
+        async with async_client.keys.with_streaming_response.revoke(
             "id",
         ) as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
 
-            check = await response.parse()
-            assert check is None
+            key = await response.parse()
+            assert key is None
 
         assert cast(Any, response.is_closed) is True
 
     @parametrize
-    async def test_path_params_delete(self, async_client: AsyncSimpleChecks) -> None:
+    async def test_path_params_revoke(self, async_client: AsyncSimpleChecks) -> None:
         with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            await async_client.checks.with_raw_response.delete(
+            await async_client.keys.with_raw_response.revoke(
                 "",
             )

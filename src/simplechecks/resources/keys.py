@@ -16,32 +16,32 @@ from .._response import (
 )
 from .._base_client import make_request_options
 
-__all__ = ["ChecksResource", "AsyncChecksResource"]
+__all__ = ["KeysResource", "AsyncKeysResource"]
 
 
-class ChecksResource(SyncAPIResource):
-    """CRUD for synthetic-monitoring checks."""
+class KeysResource(SyncAPIResource):
+    """Manage personal access tokens (PATs)."""
 
     @cached_property
-    def with_raw_response(self) -> ChecksResourceWithRawResponse:
+    def with_raw_response(self) -> KeysResourceWithRawResponse:
         """
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
         For more information, see https://www.github.com/simplechecks/simplechecks-sdk-python#accessing-raw-response-data-eg-headers
         """
-        return ChecksResourceWithRawResponse(self)
+        return KeysResourceWithRawResponse(self)
 
     @cached_property
-    def with_streaming_response(self) -> ChecksResourceWithStreamingResponse:
+    def with_streaming_response(self) -> KeysResourceWithStreamingResponse:
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
         For more information, see https://www.github.com/simplechecks/simplechecks-sdk-python#with_streaming_response
         """
-        return ChecksResourceWithStreamingResponse(self)
+        return KeysResourceWithStreamingResponse(self)
 
-    def delete(
+    def revoke(
         self,
         id: str,
         *,
@@ -52,9 +52,10 @@ class ChecksResource(SyncAPIResource):
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> None:
-        """Disables the check.
+        """Marks the key revoked.
 
-        Requires the `checks:write` scope.
+        Subsequent ext_authz checks reject requests authenticated
+        with this key. The row stays for audit. Requires the `keys:write` scope.
 
         Args:
           extra_headers: Send extra headers
@@ -69,7 +70,7 @@ class ChecksResource(SyncAPIResource):
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         extra_headers = {"Accept": "*/*", **(extra_headers or {})}
         return self._delete(
-            path_template("/v1/checks/{id}", id=id),
+            path_template("/v1/keys/{id}", id=id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -77,29 +78,29 @@ class ChecksResource(SyncAPIResource):
         )
 
 
-class AsyncChecksResource(AsyncAPIResource):
-    """CRUD for synthetic-monitoring checks."""
+class AsyncKeysResource(AsyncAPIResource):
+    """Manage personal access tokens (PATs)."""
 
     @cached_property
-    def with_raw_response(self) -> AsyncChecksResourceWithRawResponse:
+    def with_raw_response(self) -> AsyncKeysResourceWithRawResponse:
         """
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
         For more information, see https://www.github.com/simplechecks/simplechecks-sdk-python#accessing-raw-response-data-eg-headers
         """
-        return AsyncChecksResourceWithRawResponse(self)
+        return AsyncKeysResourceWithRawResponse(self)
 
     @cached_property
-    def with_streaming_response(self) -> AsyncChecksResourceWithStreamingResponse:
+    def with_streaming_response(self) -> AsyncKeysResourceWithStreamingResponse:
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
         For more information, see https://www.github.com/simplechecks/simplechecks-sdk-python#with_streaming_response
         """
-        return AsyncChecksResourceWithStreamingResponse(self)
+        return AsyncKeysResourceWithStreamingResponse(self)
 
-    async def delete(
+    async def revoke(
         self,
         id: str,
         *,
@@ -110,9 +111,10 @@ class AsyncChecksResource(AsyncAPIResource):
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> None:
-        """Disables the check.
+        """Marks the key revoked.
 
-        Requires the `checks:write` scope.
+        Subsequent ext_authz checks reject requests authenticated
+        with this key. The row stays for audit. Requires the `keys:write` scope.
 
         Args:
           extra_headers: Send extra headers
@@ -127,7 +129,7 @@ class AsyncChecksResource(AsyncAPIResource):
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         extra_headers = {"Accept": "*/*", **(extra_headers or {})}
         return await self._delete(
-            path_template("/v1/checks/{id}", id=id),
+            path_template("/v1/keys/{id}", id=id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -135,37 +137,37 @@ class AsyncChecksResource(AsyncAPIResource):
         )
 
 
-class ChecksResourceWithRawResponse:
-    def __init__(self, checks: ChecksResource) -> None:
-        self._checks = checks
+class KeysResourceWithRawResponse:
+    def __init__(self, keys: KeysResource) -> None:
+        self._keys = keys
 
-        self.delete = to_raw_response_wrapper(
-            checks.delete,
+        self.revoke = to_raw_response_wrapper(
+            keys.revoke,
         )
 
 
-class AsyncChecksResourceWithRawResponse:
-    def __init__(self, checks: AsyncChecksResource) -> None:
-        self._checks = checks
+class AsyncKeysResourceWithRawResponse:
+    def __init__(self, keys: AsyncKeysResource) -> None:
+        self._keys = keys
 
-        self.delete = async_to_raw_response_wrapper(
-            checks.delete,
+        self.revoke = async_to_raw_response_wrapper(
+            keys.revoke,
         )
 
 
-class ChecksResourceWithStreamingResponse:
-    def __init__(self, checks: ChecksResource) -> None:
-        self._checks = checks
+class KeysResourceWithStreamingResponse:
+    def __init__(self, keys: KeysResource) -> None:
+        self._keys = keys
 
-        self.delete = to_streamed_response_wrapper(
-            checks.delete,
+        self.revoke = to_streamed_response_wrapper(
+            keys.revoke,
         )
 
 
-class AsyncChecksResourceWithStreamingResponse:
-    def __init__(self, checks: AsyncChecksResource) -> None:
-        self._checks = checks
+class AsyncKeysResourceWithStreamingResponse:
+    def __init__(self, keys: AsyncKeysResource) -> None:
+        self._keys = keys
 
-        self.delete = async_to_streamed_response_wrapper(
-            checks.delete,
+        self.revoke = async_to_streamed_response_wrapper(
+            keys.revoke,
         )

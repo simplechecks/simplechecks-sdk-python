@@ -18,11 +18,11 @@ __all__ = [
 ]
 
 
-class SimplechecksError(Exception):
+class SimpleChecksError(Exception):
     pass
 
 
-class APIError(SimplechecksError):
+class APIError(SimpleChecksError):
     message: str
     request: httpx.Request
 

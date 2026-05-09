@@ -25,10 +25,9 @@ from ._utils import (
     get_async_library,
 )
 from ._compat import cached_property
-from ._models import SecurityOptions
 from ._version import __version__
 from ._streaming import Stream as Stream, AsyncStream as AsyncStream
-from ._exceptions import APIStatusError, SimplechecksError
+from ._exceptions import APIStatusError
 from ._base_client import (
     DEFAULT_MAX_RETRIES,
     SyncAPIClient,
@@ -36,10 +35,13 @@ from ._base_client import (
 )
 
 if TYPE_CHECKING:
-    from .resources import checks, account, healthz
+    from .resources import keys, runs, checks, account, balance, checkout_sessions
+    from .resources.keys import KeysResource, AsyncKeysResource
+    from .resources.runs import RunsResource, AsyncRunsResource
     from .resources.checks import ChecksResource, AsyncChecksResource
     from .resources.account import AccountResource, AsyncAccountResource
-    from .resources.healthz import HealthzResource, AsyncHealthzResource
+    from .resources.balance import BalanceResource, AsyncBalanceResource
+    from .resources.checkout_sessions import CheckoutSessionsResource, AsyncCheckoutSessionsResource
 
 __all__ = [
     "ENVIRONMENTS",
@@ -47,29 +49,27 @@ __all__ = [
     "Transport",
     "ProxiesTypes",
     "RequestOptions",
-    "Simplechecks",
-    "AsyncSimplechecks",
+    "SimpleChecks",
+    "AsyncSimpleChecks",
     "Client",
     "AsyncClient",
 ]
 
 ENVIRONMENTS: Dict[str, str] = {
     "production": "https://api.simplechecks.com",
-    "environment_1": "http://localhost:8080",
+    "local": "http://localhost:8080",
 }
 
 
-class Simplechecks(SyncAPIClient):
+class SimpleChecks(SyncAPIClient):
     # client options
-    api_key: str
 
-    _environment: Literal["production", "environment_1"] | NotGiven
+    _environment: Literal["production", "local"] | NotGiven
 
     def __init__(
         self,
         *,
-        api_key: str | None = None,
-        environment: Literal["production", "environment_1"] | NotGiven = not_given,
+        environment: Literal["production", "local"] | NotGiven = not_given,
         base_url: str | httpx.URL | None | NotGiven = not_given,
         timeout: float | Timeout | None | NotGiven = not_given,
         max_retries: int = DEFAULT_MAX_RETRIES,
@@ -89,28 +89,17 @@ class Simplechecks(SyncAPIClient):
         # part of our public interface in the future.
         _strict_response_validation: bool = False,
     ) -> None:
-        """Construct a new synchronous Simplechecks client instance.
-
-        This automatically infers the `api_key` argument from the `SIMPLECHECKS_API_KEY` environment variable if it is not provided.
-        """
-        if api_key is None:
-            api_key = os.environ.get("SIMPLECHECKS_API_KEY")
-        if api_key is None:
-            raise SimplechecksError(
-                "The api_key client option must be set either by passing api_key to the client or by setting the SIMPLECHECKS_API_KEY environment variable"
-            )
-        self.api_key = api_key
-
+        """Construct a new synchronous SimpleChecks client instance."""
         self._environment = environment
 
-        base_url_env = os.environ.get("SIMPLECHECKS_BASE_URL")
+        base_url_env = os.environ.get("SIMPLE_CHECKS_BASE_URL")
         if is_given(base_url) and base_url is not None:
             # cast required because mypy doesn't understand the type narrowing
             base_url = cast("str | httpx.URL", base_url)  # pyright: ignore[reportUnnecessaryCast]
         elif is_given(environment):
             if base_url_env and base_url is not None:
                 raise ValueError(
-                    "Ambiguous URL; The `SIMPLECHECKS_BASE_URL` env var and the `environment` argument are given. If you want to use the environment, you must pass base_url=None",
+                    "Ambiguous URL; The `SIMPLE_CHECKS_BASE_URL` env var and the `environment` argument are given. If you want to use the environment, you must pass base_url=None",
                 )
 
             try:
@@ -127,7 +116,7 @@ class Simplechecks(SyncAPIClient):
             except KeyError as exc:
                 raise ValueError(f"Unknown environment: {environment}") from exc
 
-        custom_headers_env = os.environ.get("SIMPLECHECKS_CUSTOM_HEADERS")
+        custom_headers_env = os.environ.get("SIMPLE_CHECKS_CUSTOM_HEADERS")
         if custom_headers_env is not None:
             parsed: dict[str, str] = {}
             for line in custom_headers_env.split("\n"):
@@ -148,13 +137,6 @@ class Simplechecks(SyncAPIClient):
         )
 
     @cached_property
-    def healthz(self) -> HealthzResource:
-        """Liveness + readiness."""
-        from .resources.healthz import HealthzResource
-
-        return HealthzResource(self)
-
-    @cached_property
     def account(self) -> AccountResource:
         """Account profile and balance."""
         from .resources.account import AccountResource
@@ -169,28 +151,45 @@ class Simplechecks(SyncAPIClient):
         return ChecksResource(self)
 
     @cached_property
-    def with_raw_response(self) -> SimplechecksWithRawResponse:
-        return SimplechecksWithRawResponse(self)
+    def runs(self) -> RunsResource:
+        """Read-only access to past check executions."""
+        from .resources.runs import RunsResource
+
+        return RunsResource(self)
 
     @cached_property
-    def with_streaming_response(self) -> SimplechecksWithStreamedResponse:
-        return SimplechecksWithStreamedResponse(self)
+    def keys(self) -> KeysResource:
+        """Manage personal access tokens (PATs)."""
+        from .resources.keys import KeysResource
+
+        return KeysResource(self)
+
+    @cached_property
+    def balance(self) -> BalanceResource:
+        """Run-credit balance + Stripe Checkout for top-ups."""
+        from .resources.balance import BalanceResource
+
+        return BalanceResource(self)
+
+    @cached_property
+    def checkout_sessions(self) -> CheckoutSessionsResource:
+        """Run-credit balance + Stripe Checkout for top-ups."""
+        from .resources.checkout_sessions import CheckoutSessionsResource
+
+        return CheckoutSessionsResource(self)
+
+    @cached_property
+    def with_raw_response(self) -> SimpleChecksWithRawResponse:
+        return SimpleChecksWithRawResponse(self)
+
+    @cached_property
+    def with_streaming_response(self) -> SimpleChecksWithStreamedResponse:
+        return SimpleChecksWithStreamedResponse(self)
 
     @property
     @override
     def qs(self) -> Querystring:
         return Querystring(array_format="comma")
-
-    @override
-    def _auth_headers(self, security: SecurityOptions) -> dict[str, str]:
-        return {
-            **(self._bearer_auth if security.get("bearer_auth", False) else {}),
-        }
-
-    @property
-    def _bearer_auth(self) -> dict[str, str]:
-        api_key = self.api_key
-        return {"Authorization": f"Bearer {api_key}"}
 
     @property
     @override
@@ -204,8 +203,7 @@ class Simplechecks(SyncAPIClient):
     def copy(
         self,
         *,
-        api_key: str | None = None,
-        environment: Literal["production", "environment_1"] | None = None,
+        environment: Literal["production", "local"] | None = None,
         base_url: str | httpx.URL | None = None,
         timeout: float | Timeout | None | NotGiven = not_given,
         http_client: httpx.Client | None = None,
@@ -239,7 +237,6 @@ class Simplechecks(SyncAPIClient):
 
         http_client = http_client or self._client
         return self.__class__(
-            api_key=api_key or self.api_key,
             base_url=base_url or self.base_url,
             environment=environment or self._environment,
             timeout=self.timeout if isinstance(timeout, NotGiven) else timeout,
@@ -288,17 +285,15 @@ class Simplechecks(SyncAPIClient):
         return APIStatusError(err_msg, response=response, body=body)
 
 
-class AsyncSimplechecks(AsyncAPIClient):
+class AsyncSimpleChecks(AsyncAPIClient):
     # client options
-    api_key: str
 
-    _environment: Literal["production", "environment_1"] | NotGiven
+    _environment: Literal["production", "local"] | NotGiven
 
     def __init__(
         self,
         *,
-        api_key: str | None = None,
-        environment: Literal["production", "environment_1"] | NotGiven = not_given,
+        environment: Literal["production", "local"] | NotGiven = not_given,
         base_url: str | httpx.URL | None | NotGiven = not_given,
         timeout: float | Timeout | None | NotGiven = not_given,
         max_retries: int = DEFAULT_MAX_RETRIES,
@@ -318,28 +313,17 @@ class AsyncSimplechecks(AsyncAPIClient):
         # part of our public interface in the future.
         _strict_response_validation: bool = False,
     ) -> None:
-        """Construct a new async AsyncSimplechecks client instance.
-
-        This automatically infers the `api_key` argument from the `SIMPLECHECKS_API_KEY` environment variable if it is not provided.
-        """
-        if api_key is None:
-            api_key = os.environ.get("SIMPLECHECKS_API_KEY")
-        if api_key is None:
-            raise SimplechecksError(
-                "The api_key client option must be set either by passing api_key to the client or by setting the SIMPLECHECKS_API_KEY environment variable"
-            )
-        self.api_key = api_key
-
+        """Construct a new async AsyncSimpleChecks client instance."""
         self._environment = environment
 
-        base_url_env = os.environ.get("SIMPLECHECKS_BASE_URL")
+        base_url_env = os.environ.get("SIMPLE_CHECKS_BASE_URL")
         if is_given(base_url) and base_url is not None:
             # cast required because mypy doesn't understand the type narrowing
             base_url = cast("str | httpx.URL", base_url)  # pyright: ignore[reportUnnecessaryCast]
         elif is_given(environment):
             if base_url_env and base_url is not None:
                 raise ValueError(
-                    "Ambiguous URL; The `SIMPLECHECKS_BASE_URL` env var and the `environment` argument are given. If you want to use the environment, you must pass base_url=None",
+                    "Ambiguous URL; The `SIMPLE_CHECKS_BASE_URL` env var and the `environment` argument are given. If you want to use the environment, you must pass base_url=None",
                 )
 
             try:
@@ -356,7 +340,7 @@ class AsyncSimplechecks(AsyncAPIClient):
             except KeyError as exc:
                 raise ValueError(f"Unknown environment: {environment}") from exc
 
-        custom_headers_env = os.environ.get("SIMPLECHECKS_CUSTOM_HEADERS")
+        custom_headers_env = os.environ.get("SIMPLE_CHECKS_CUSTOM_HEADERS")
         if custom_headers_env is not None:
             parsed: dict[str, str] = {}
             for line in custom_headers_env.split("\n"):
@@ -377,13 +361,6 @@ class AsyncSimplechecks(AsyncAPIClient):
         )
 
     @cached_property
-    def healthz(self) -> AsyncHealthzResource:
-        """Liveness + readiness."""
-        from .resources.healthz import AsyncHealthzResource
-
-        return AsyncHealthzResource(self)
-
-    @cached_property
     def account(self) -> AsyncAccountResource:
         """Account profile and balance."""
         from .resources.account import AsyncAccountResource
@@ -398,28 +375,45 @@ class AsyncSimplechecks(AsyncAPIClient):
         return AsyncChecksResource(self)
 
     @cached_property
-    def with_raw_response(self) -> AsyncSimplechecksWithRawResponse:
-        return AsyncSimplechecksWithRawResponse(self)
+    def runs(self) -> AsyncRunsResource:
+        """Read-only access to past check executions."""
+        from .resources.runs import AsyncRunsResource
+
+        return AsyncRunsResource(self)
 
     @cached_property
-    def with_streaming_response(self) -> AsyncSimplechecksWithStreamedResponse:
-        return AsyncSimplechecksWithStreamedResponse(self)
+    def keys(self) -> AsyncKeysResource:
+        """Manage personal access tokens (PATs)."""
+        from .resources.keys import AsyncKeysResource
+
+        return AsyncKeysResource(self)
+
+    @cached_property
+    def balance(self) -> AsyncBalanceResource:
+        """Run-credit balance + Stripe Checkout for top-ups."""
+        from .resources.balance import AsyncBalanceResource
+
+        return AsyncBalanceResource(self)
+
+    @cached_property
+    def checkout_sessions(self) -> AsyncCheckoutSessionsResource:
+        """Run-credit balance + Stripe Checkout for top-ups."""
+        from .resources.checkout_sessions import AsyncCheckoutSessionsResource
+
+        return AsyncCheckoutSessionsResource(self)
+
+    @cached_property
+    def with_raw_response(self) -> AsyncSimpleChecksWithRawResponse:
+        return AsyncSimpleChecksWithRawResponse(self)
+
+    @cached_property
+    def with_streaming_response(self) -> AsyncSimpleChecksWithStreamedResponse:
+        return AsyncSimpleChecksWithStreamedResponse(self)
 
     @property
     @override
     def qs(self) -> Querystring:
         return Querystring(array_format="comma")
-
-    @override
-    def _auth_headers(self, security: SecurityOptions) -> dict[str, str]:
-        return {
-            **(self._bearer_auth if security.get("bearer_auth", False) else {}),
-        }
-
-    @property
-    def _bearer_auth(self) -> dict[str, str]:
-        api_key = self.api_key
-        return {"Authorization": f"Bearer {api_key}"}
 
     @property
     @override
@@ -433,8 +427,7 @@ class AsyncSimplechecks(AsyncAPIClient):
     def copy(
         self,
         *,
-        api_key: str | None = None,
-        environment: Literal["production", "environment_1"] | None = None,
+        environment: Literal["production", "local"] | None = None,
         base_url: str | httpx.URL | None = None,
         timeout: float | Timeout | None | NotGiven = not_given,
         http_client: httpx.AsyncClient | None = None,
@@ -468,7 +461,6 @@ class AsyncSimplechecks(AsyncAPIClient):
 
         http_client = http_client or self._client
         return self.__class__(
-            api_key=api_key or self.api_key,
             base_url=base_url or self.base_url,
             environment=environment or self._environment,
             timeout=self.timeout if isinstance(timeout, NotGiven) else timeout,
@@ -517,18 +509,11 @@ class AsyncSimplechecks(AsyncAPIClient):
         return APIStatusError(err_msg, response=response, body=body)
 
 
-class SimplechecksWithRawResponse:
-    _client: Simplechecks
+class SimpleChecksWithRawResponse:
+    _client: SimpleChecks
 
-    def __init__(self, client: Simplechecks) -> None:
+    def __init__(self, client: SimpleChecks) -> None:
         self._client = client
-
-    @cached_property
-    def healthz(self) -> healthz.HealthzResourceWithRawResponse:
-        """Liveness + readiness."""
-        from .resources.healthz import HealthzResourceWithRawResponse
-
-        return HealthzResourceWithRawResponse(self._client.healthz)
 
     @cached_property
     def account(self) -> account.AccountResourceWithRawResponse:
@@ -544,19 +529,40 @@ class SimplechecksWithRawResponse:
 
         return ChecksResourceWithRawResponse(self._client.checks)
 
+    @cached_property
+    def runs(self) -> runs.RunsResourceWithRawResponse:
+        """Read-only access to past check executions."""
+        from .resources.runs import RunsResourceWithRawResponse
 
-class AsyncSimplechecksWithRawResponse:
-    _client: AsyncSimplechecks
-
-    def __init__(self, client: AsyncSimplechecks) -> None:
-        self._client = client
+        return RunsResourceWithRawResponse(self._client.runs)
 
     @cached_property
-    def healthz(self) -> healthz.AsyncHealthzResourceWithRawResponse:
-        """Liveness + readiness."""
-        from .resources.healthz import AsyncHealthzResourceWithRawResponse
+    def keys(self) -> keys.KeysResourceWithRawResponse:
+        """Manage personal access tokens (PATs)."""
+        from .resources.keys import KeysResourceWithRawResponse
 
-        return AsyncHealthzResourceWithRawResponse(self._client.healthz)
+        return KeysResourceWithRawResponse(self._client.keys)
+
+    @cached_property
+    def balance(self) -> balance.BalanceResourceWithRawResponse:
+        """Run-credit balance + Stripe Checkout for top-ups."""
+        from .resources.balance import BalanceResourceWithRawResponse
+
+        return BalanceResourceWithRawResponse(self._client.balance)
+
+    @cached_property
+    def checkout_sessions(self) -> checkout_sessions.CheckoutSessionsResourceWithRawResponse:
+        """Run-credit balance + Stripe Checkout for top-ups."""
+        from .resources.checkout_sessions import CheckoutSessionsResourceWithRawResponse
+
+        return CheckoutSessionsResourceWithRawResponse(self._client.checkout_sessions)
+
+
+class AsyncSimpleChecksWithRawResponse:
+    _client: AsyncSimpleChecks
+
+    def __init__(self, client: AsyncSimpleChecks) -> None:
+        self._client = client
 
     @cached_property
     def account(self) -> account.AsyncAccountResourceWithRawResponse:
@@ -572,19 +578,40 @@ class AsyncSimplechecksWithRawResponse:
 
         return AsyncChecksResourceWithRawResponse(self._client.checks)
 
+    @cached_property
+    def runs(self) -> runs.AsyncRunsResourceWithRawResponse:
+        """Read-only access to past check executions."""
+        from .resources.runs import AsyncRunsResourceWithRawResponse
 
-class SimplechecksWithStreamedResponse:
-    _client: Simplechecks
-
-    def __init__(self, client: Simplechecks) -> None:
-        self._client = client
+        return AsyncRunsResourceWithRawResponse(self._client.runs)
 
     @cached_property
-    def healthz(self) -> healthz.HealthzResourceWithStreamingResponse:
-        """Liveness + readiness."""
-        from .resources.healthz import HealthzResourceWithStreamingResponse
+    def keys(self) -> keys.AsyncKeysResourceWithRawResponse:
+        """Manage personal access tokens (PATs)."""
+        from .resources.keys import AsyncKeysResourceWithRawResponse
 
-        return HealthzResourceWithStreamingResponse(self._client.healthz)
+        return AsyncKeysResourceWithRawResponse(self._client.keys)
+
+    @cached_property
+    def balance(self) -> balance.AsyncBalanceResourceWithRawResponse:
+        """Run-credit balance + Stripe Checkout for top-ups."""
+        from .resources.balance import AsyncBalanceResourceWithRawResponse
+
+        return AsyncBalanceResourceWithRawResponse(self._client.balance)
+
+    @cached_property
+    def checkout_sessions(self) -> checkout_sessions.AsyncCheckoutSessionsResourceWithRawResponse:
+        """Run-credit balance + Stripe Checkout for top-ups."""
+        from .resources.checkout_sessions import AsyncCheckoutSessionsResourceWithRawResponse
+
+        return AsyncCheckoutSessionsResourceWithRawResponse(self._client.checkout_sessions)
+
+
+class SimpleChecksWithStreamedResponse:
+    _client: SimpleChecks
+
+    def __init__(self, client: SimpleChecks) -> None:
+        self._client = client
 
     @cached_property
     def account(self) -> account.AccountResourceWithStreamingResponse:
@@ -600,19 +627,40 @@ class SimplechecksWithStreamedResponse:
 
         return ChecksResourceWithStreamingResponse(self._client.checks)
 
+    @cached_property
+    def runs(self) -> runs.RunsResourceWithStreamingResponse:
+        """Read-only access to past check executions."""
+        from .resources.runs import RunsResourceWithStreamingResponse
 
-class AsyncSimplechecksWithStreamedResponse:
-    _client: AsyncSimplechecks
-
-    def __init__(self, client: AsyncSimplechecks) -> None:
-        self._client = client
+        return RunsResourceWithStreamingResponse(self._client.runs)
 
     @cached_property
-    def healthz(self) -> healthz.AsyncHealthzResourceWithStreamingResponse:
-        """Liveness + readiness."""
-        from .resources.healthz import AsyncHealthzResourceWithStreamingResponse
+    def keys(self) -> keys.KeysResourceWithStreamingResponse:
+        """Manage personal access tokens (PATs)."""
+        from .resources.keys import KeysResourceWithStreamingResponse
 
-        return AsyncHealthzResourceWithStreamingResponse(self._client.healthz)
+        return KeysResourceWithStreamingResponse(self._client.keys)
+
+    @cached_property
+    def balance(self) -> balance.BalanceResourceWithStreamingResponse:
+        """Run-credit balance + Stripe Checkout for top-ups."""
+        from .resources.balance import BalanceResourceWithStreamingResponse
+
+        return BalanceResourceWithStreamingResponse(self._client.balance)
+
+    @cached_property
+    def checkout_sessions(self) -> checkout_sessions.CheckoutSessionsResourceWithStreamingResponse:
+        """Run-credit balance + Stripe Checkout for top-ups."""
+        from .resources.checkout_sessions import CheckoutSessionsResourceWithStreamingResponse
+
+        return CheckoutSessionsResourceWithStreamingResponse(self._client.checkout_sessions)
+
+
+class AsyncSimpleChecksWithStreamedResponse:
+    _client: AsyncSimpleChecks
+
+    def __init__(self, client: AsyncSimpleChecks) -> None:
+        self._client = client
 
     @cached_property
     def account(self) -> account.AsyncAccountResourceWithStreamingResponse:
@@ -628,7 +676,35 @@ class AsyncSimplechecksWithStreamedResponse:
 
         return AsyncChecksResourceWithStreamingResponse(self._client.checks)
 
+    @cached_property
+    def runs(self) -> runs.AsyncRunsResourceWithStreamingResponse:
+        """Read-only access to past check executions."""
+        from .resources.runs import AsyncRunsResourceWithStreamingResponse
 
-Client = Simplechecks
+        return AsyncRunsResourceWithStreamingResponse(self._client.runs)
 
-AsyncClient = AsyncSimplechecks
+    @cached_property
+    def keys(self) -> keys.AsyncKeysResourceWithStreamingResponse:
+        """Manage personal access tokens (PATs)."""
+        from .resources.keys import AsyncKeysResourceWithStreamingResponse
+
+        return AsyncKeysResourceWithStreamingResponse(self._client.keys)
+
+    @cached_property
+    def balance(self) -> balance.AsyncBalanceResourceWithStreamingResponse:
+        """Run-credit balance + Stripe Checkout for top-ups."""
+        from .resources.balance import AsyncBalanceResourceWithStreamingResponse
+
+        return AsyncBalanceResourceWithStreamingResponse(self._client.balance)
+
+    @cached_property
+    def checkout_sessions(self) -> checkout_sessions.AsyncCheckoutSessionsResourceWithStreamingResponse:
+        """Run-credit balance + Stripe Checkout for top-ups."""
+        from .resources.checkout_sessions import AsyncCheckoutSessionsResourceWithStreamingResponse
+
+        return AsyncCheckoutSessionsResourceWithStreamingResponse(self._client.checkout_sessions)
+
+
+Client = SimpleChecks
+
+AsyncClient = AsyncSimpleChecks

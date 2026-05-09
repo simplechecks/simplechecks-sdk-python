@@ -9,66 +9,66 @@ import pytest
 
 from tests.utils import assert_matches_type
 from simplechecks import SimpleChecks, AsyncSimpleChecks
-from simplechecks.types import Account
+from simplechecks.types import Balance
 
 base_url = os.environ.get("TEST_API_BASE_URL", "http://127.0.0.1:4010")
 
 
-class TestAccount:
+class TestBalance:
     parametrize = pytest.mark.parametrize("client", [False, True], indirect=True, ids=["loose", "strict"])
 
     @parametrize
     def test_method_retrieve(self, client: SimpleChecks) -> None:
-        account = client.account.retrieve()
-        assert_matches_type(Account, account, path=["response"])
+        balance = client.balance.retrieve()
+        assert_matches_type(Balance, balance, path=["response"])
 
     @parametrize
     def test_raw_response_retrieve(self, client: SimpleChecks) -> None:
-        response = client.account.with_raw_response.retrieve()
+        response = client.balance.with_raw_response.retrieve()
 
         assert response.is_closed is True
         assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-        account = response.parse()
-        assert_matches_type(Account, account, path=["response"])
+        balance = response.parse()
+        assert_matches_type(Balance, balance, path=["response"])
 
     @parametrize
     def test_streaming_response_retrieve(self, client: SimpleChecks) -> None:
-        with client.account.with_streaming_response.retrieve() as response:
+        with client.balance.with_streaming_response.retrieve() as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
 
-            account = response.parse()
-            assert_matches_type(Account, account, path=["response"])
+            balance = response.parse()
+            assert_matches_type(Balance, balance, path=["response"])
 
         assert cast(Any, response.is_closed) is True
 
 
-class TestAsyncAccount:
+class TestAsyncBalance:
     parametrize = pytest.mark.parametrize(
         "async_client", [False, True, {"http_client": "aiohttp"}], indirect=True, ids=["loose", "strict", "aiohttp"]
     )
 
     @parametrize
     async def test_method_retrieve(self, async_client: AsyncSimpleChecks) -> None:
-        account = await async_client.account.retrieve()
-        assert_matches_type(Account, account, path=["response"])
+        balance = await async_client.balance.retrieve()
+        assert_matches_type(Balance, balance, path=["response"])
 
     @parametrize
     async def test_raw_response_retrieve(self, async_client: AsyncSimpleChecks) -> None:
-        response = await async_client.account.with_raw_response.retrieve()
+        response = await async_client.balance.with_raw_response.retrieve()
 
         assert response.is_closed is True
         assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-        account = await response.parse()
-        assert_matches_type(Account, account, path=["response"])
+        balance = await response.parse()
+        assert_matches_type(Balance, balance, path=["response"])
 
     @parametrize
     async def test_streaming_response_retrieve(self, async_client: AsyncSimpleChecks) -> None:
-        async with async_client.account.with_streaming_response.retrieve() as response:
+        async with async_client.balance.with_streaming_response.retrieve() as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
 
-            account = await response.parse()
-            assert_matches_type(Account, account, path=["response"])
+            balance = await response.parse()
+            assert_matches_type(Balance, balance, path=["response"])
 
         assert cast(Any, response.is_closed) is True
