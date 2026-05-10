@@ -34,8 +34,8 @@ client = SimpleChecks(
     environment="local",
 )
 
-page = client.checks.list()
-print(page.data)
+checks = client.checks.list()
+print(checks.checks)
 ```
 
 While you can provide an `api_key` keyword argument,
@@ -60,8 +60,8 @@ client = AsyncSimpleChecks(
 
 
 async def main() -> None:
-    page = await client.checks.list()
-    print(page.data)
+    checks = await client.checks.list()
+    print(checks.checks)
 
 
 asyncio.run(main())
@@ -94,8 +94,8 @@ async def main() -> None:
         api_key=os.environ.get("SIMPLECHECKS_API_KEY"),  # This is the default and can be omitted
         http_client=DefaultAioHttpClient(),
     ) as client:
-        page = await client.checks.list()
-        print(page.data)
+        checks = await client.checks.list()
+        print(checks.checks)
 
 
 asyncio.run(main())
@@ -109,67 +109,6 @@ Nested request parameters are [TypedDicts](https://docs.python.org/3/library/typ
 - Converting to a dictionary, `model.to_dict()`
 
 Typed requests and responses provide autocomplete and documentation within your editor. If you would like to see type errors in VS Code to help catch bugs earlier, set `python.analysis.typeCheckingMode` to `basic`.
-
-## Pagination
-
-List methods in the Simple Checks API are paginated.
-
-This library provides auto-paginating iterators with each list response, so you do not have to request successive pages manually:
-
-```python
-from simplechecks import SimpleChecks
-
-client = SimpleChecks()
-
-all_checks = []
-# Automatically fetches more pages as needed.
-for check in client.checks.list():
-    # Do something with check here
-    all_checks.append(check)
-print(all_checks)
-```
-
-Or, asynchronously:
-
-```python
-import asyncio
-from simplechecks import AsyncSimpleChecks
-
-client = AsyncSimpleChecks()
-
-
-async def main() -> None:
-    all_checks = []
-    # Iterate through items across all pages, issuing requests as needed.
-    async for check in client.checks.list():
-        all_checks.append(check)
-    print(all_checks)
-
-
-asyncio.run(main())
-```
-
-Alternatively, you can use the `.has_next_page()`, `.next_page_info()`, or `.get_next_page()` methods for more granular control working with pages:
-
-```python
-first_page = await client.checks.list()
-if first_page.has_next_page():
-    print(f"will fetch next page using these details: {first_page.next_page_info()}")
-    next_page = await first_page.get_next_page()
-    print(f"number of items we just fetched: {len(next_page.data)}")
-
-# Remove `await` for non-async usage.
-```
-
-Or just work directly with the returned data:
-
-```python
-first_page = await client.checks.list()
-for check in first_page.data:
-    print(check.checks)
-
-# Remove `await` for non-async usage.
-```
 
 ## Handling errors
 
