@@ -25,8 +25,9 @@ from ..._response import (
     async_to_raw_response_wrapper,
     async_to_streamed_response_wrapper,
 )
+from ...pagination import SyncOffset, AsyncOffset
 from ...types.check import Check
-from ..._base_client import make_request_options
+from ..._base_client import AsyncPaginator, make_request_options
 from ...types.check_list_response import CheckListResponse
 
 __all__ = ["ChecksResource", "AsyncChecksResource"]
@@ -221,7 +222,7 @@ class ChecksResource(SyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> CheckListResponse:
+    ) -> SyncOffset[CheckListResponse]:
         """Returns the caller's checks with simple offset pagination.
 
         `next_offset` is set
@@ -241,8 +242,9 @@ class ChecksResource(SyncAPIResource):
 
           timeout: Override the client-level default timeout for this request, in seconds
         """
-        return self._get(
+        return self._get_api_list(
             "/v1/checks",
+            page=SyncOffset[CheckListResponse],
             options=make_request_options(
                 extra_headers=extra_headers,
                 extra_query=extra_query,
@@ -256,7 +258,7 @@ class ChecksResource(SyncAPIResource):
                     check_list_params.CheckListParams,
                 ),
             ),
-            cast_to=CheckListResponse,
+            model=CheckListResponse,
         )
 
     def delete(
@@ -473,7 +475,7 @@ class AsyncChecksResource(AsyncAPIResource):
             cast_to=Check,
         )
 
-    async def list(
+    def list(
         self,
         *,
         limit: int | Omit = omit,
@@ -484,7 +486,7 @@ class AsyncChecksResource(AsyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> CheckListResponse:
+    ) -> AsyncPaginator[CheckListResponse, AsyncOffset[CheckListResponse]]:
         """Returns the caller's checks with simple offset pagination.
 
         `next_offset` is set
@@ -504,14 +506,15 @@ class AsyncChecksResource(AsyncAPIResource):
 
           timeout: Override the client-level default timeout for this request, in seconds
         """
-        return await self._get(
+        return self._get_api_list(
             "/v1/checks",
+            page=AsyncOffset[CheckListResponse],
             options=make_request_options(
                 extra_headers=extra_headers,
                 extra_query=extra_query,
                 extra_body=extra_body,
                 timeout=timeout,
-                query=await async_maybe_transform(
+                query=maybe_transform(
                     {
                         "limit": limit,
                         "offset": offset,
@@ -519,7 +522,7 @@ class AsyncChecksResource(AsyncAPIResource):
                     check_list_params.CheckListParams,
                 ),
             ),
-            cast_to=CheckListResponse,
+            model=CheckListResponse,
         )
 
     async def delete(
