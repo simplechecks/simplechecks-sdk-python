@@ -1,6 +1,6 @@
 [project]
 name = "simplechecks"
-version = "0.1.0"
+version = "0.2.0"
 description = "The official Python library for the simple-checks API"
 dynamic = ["readme"]
 license = "Apache-2.0"
