@@ -15,7 +15,13 @@ Methods:
 Types:
 
 ```python
-from simplechecks.types import AlertConfig, Check, CheckListResponse
+from simplechecks.types import (
+    AlertChannel,
+    AlertConfig,
+    Check,
+    MaintenanceWindow,
+    CheckListResponse,
+)
 ```
 
 Methods:

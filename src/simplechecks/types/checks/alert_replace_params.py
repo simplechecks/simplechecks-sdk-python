@@ -2,14 +2,17 @@
 
 from __future__ import annotations
 
-from typing import Dict, Iterable
-from typing_extensions import Literal, Required, TypedDict
+from typing import Iterable
+from typing_extensions import Required, TypedDict
 
-__all__ = ["AlertReplaceParams", "Channel", "MaintenanceWindow"]
+from ..alert_channel_param import AlertChannelParam
+from ..maintenance_window_param import MaintenanceWindowParam
+
+__all__ = ["AlertReplaceParams"]
 
 
 class AlertReplaceParams(TypedDict, total=False):
-    channels: Required[Iterable[Channel]]
+    channels: Required[Iterable[AlertChannelParam]]
 
     consecutive_failures_threshold: Required[int]
     """
@@ -41,28 +44,8 @@ class AlertReplaceParams(TypedDict, total=False):
     check_id: str
     """Server-set; ignored on write."""
 
-    maintenance_windows: Iterable[MaintenanceWindow]
+    maintenance_windows: Iterable[MaintenanceWindowParam]
     """
     Absolute-time windows during which the evaluator suppresses dispatch but still
     updates state. Cron-style recurring windows are a future enhancement.
     """
-
-
-class Channel(TypedDict, total=False):
-    target: Required[str]
-    """Channel-specific destination.
-
-    URL for the webhook flavors (slack/discord/teams/webhook), email address for
-    `email`, integration key for `pagerduty`, API key for `opsgenie`.
-    """
-
-    type: Required[Literal["email", "slack", "discord", "teams", "webhook", "pagerduty", "opsgenie"]]
-
-    config: Dict[str, object]
-    """Type-specific options. Optional."""
-
-
-class MaintenanceWindow(TypedDict, total=False):
-    end_unix_ms: Required[int]
-
-    start_unix_ms: Required[int]

@@ -19,6 +19,8 @@ from ..._response import (
 from ..._base_client import make_request_options
 from ...types.checks import alert_replace_params
 from ...types.alert_config import AlertConfig
+from ...types.alert_channel_param import AlertChannelParam
+from ...types.maintenance_window_param import MaintenanceWindowParam
 from ...types.checks.alert_test_fire_response import AlertTestFireResponse
 
 __all__ = ["AlertsResource", "AsyncAlertsResource"]
@@ -121,14 +123,14 @@ class AlertsResource(SyncAPIResource):
         self,
         id: str,
         *,
-        channels: Iterable[alert_replace_params.Channel],
+        channels: Iterable[AlertChannelParam],
         consecutive_failures_threshold: int,
         consensus_m: int,
         consensus_n: int,
         enabled: bool,
         account_id: str | Omit = omit,
         check_id: str | Omit = omit,
-        maintenance_windows: Iterable[alert_replace_params.MaintenanceWindow] | Omit = omit,
+        maintenance_windows: Iterable[MaintenanceWindowParam] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -337,14 +339,14 @@ class AsyncAlertsResource(AsyncAPIResource):
         self,
         id: str,
         *,
-        channels: Iterable[alert_replace_params.Channel],
+        channels: Iterable[AlertChannelParam],
         consecutive_failures_threshold: int,
         consensus_m: int,
         consensus_n: int,
         enabled: bool,
         account_id: str | Omit = omit,
         check_id: str | Omit = omit,
-        maintenance_windows: Iterable[alert_replace_params.MaintenanceWindow] | Omit = omit,
+        maintenance_windows: Iterable[MaintenanceWindowParam] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
