@@ -36,11 +36,12 @@ from ._base_client import (
 )
 
 if TYPE_CHECKING:
-    from .resources import keys, runs, checks, account, balance, checkout_sessions
+    from .resources import keys, runs, checks, account, balance, incidents, checkout_sessions
     from .resources.keys import KeysResource, AsyncKeysResource
     from .resources.runs import RunsResource, AsyncRunsResource
     from .resources.account import AccountResource, AsyncAccountResource
     from .resources.balance import BalanceResource, AsyncBalanceResource
+    from .resources.incidents import IncidentsResource, AsyncIncidentsResource
     from .resources.checks.checks import ChecksResource, AsyncChecksResource
     from .resources.checkout_sessions import CheckoutSessionsResource, AsyncCheckoutSessionsResource
 
@@ -166,6 +167,13 @@ class SimpleChecks(SyncAPIClient):
         from .resources.runs import RunsResource
 
         return RunsResource(self)
+
+    @cached_property
+    def incidents(self) -> IncidentsResource:
+        """Read-only incident timeline derived from alert state."""
+        from .resources.incidents import IncidentsResource
+
+        return IncidentsResource(self)
 
     @cached_property
     def keys(self) -> KeysResource:
@@ -420,6 +428,13 @@ class AsyncSimpleChecks(AsyncAPIClient):
         return AsyncRunsResource(self)
 
     @cached_property
+    def incidents(self) -> AsyncIncidentsResource:
+        """Read-only incident timeline derived from alert state."""
+        from .resources.incidents import AsyncIncidentsResource
+
+        return AsyncIncidentsResource(self)
+
+    @cached_property
     def keys(self) -> AsyncKeysResource:
         """Manage personal access tokens (PATs)."""
         from .resources.keys import AsyncKeysResource
@@ -594,6 +609,13 @@ class SimpleChecksWithRawResponse:
         return RunsResourceWithRawResponse(self._client.runs)
 
     @cached_property
+    def incidents(self) -> incidents.IncidentsResourceWithRawResponse:
+        """Read-only incident timeline derived from alert state."""
+        from .resources.incidents import IncidentsResourceWithRawResponse
+
+        return IncidentsResourceWithRawResponse(self._client.incidents)
+
+    @cached_property
     def keys(self) -> keys.KeysResourceWithRawResponse:
         """Manage personal access tokens (PATs)."""
         from .resources.keys import KeysResourceWithRawResponse
@@ -641,6 +663,13 @@ class AsyncSimpleChecksWithRawResponse:
         from .resources.runs import AsyncRunsResourceWithRawResponse
 
         return AsyncRunsResourceWithRawResponse(self._client.runs)
+
+    @cached_property
+    def incidents(self) -> incidents.AsyncIncidentsResourceWithRawResponse:
+        """Read-only incident timeline derived from alert state."""
+        from .resources.incidents import AsyncIncidentsResourceWithRawResponse
+
+        return AsyncIncidentsResourceWithRawResponse(self._client.incidents)
 
     @cached_property
     def keys(self) -> keys.AsyncKeysResourceWithRawResponse:
@@ -692,6 +721,13 @@ class SimpleChecksWithStreamedResponse:
         return RunsResourceWithStreamingResponse(self._client.runs)
 
     @cached_property
+    def incidents(self) -> incidents.IncidentsResourceWithStreamingResponse:
+        """Read-only incident timeline derived from alert state."""
+        from .resources.incidents import IncidentsResourceWithStreamingResponse
+
+        return IncidentsResourceWithStreamingResponse(self._client.incidents)
+
+    @cached_property
     def keys(self) -> keys.KeysResourceWithStreamingResponse:
         """Manage personal access tokens (PATs)."""
         from .resources.keys import KeysResourceWithStreamingResponse
@@ -739,6 +775,13 @@ class AsyncSimpleChecksWithStreamedResponse:
         from .resources.runs import AsyncRunsResourceWithStreamingResponse
 
         return AsyncRunsResourceWithStreamingResponse(self._client.runs)
+
+    @cached_property
+    def incidents(self) -> incidents.AsyncIncidentsResourceWithStreamingResponse:
+        """Read-only incident timeline derived from alert state."""
+        from .resources.incidents import AsyncIncidentsResourceWithStreamingResponse
+
+        return AsyncIncidentsResourceWithStreamingResponse(self._client.incidents)
 
     @cached_property
     def keys(self) -> keys.AsyncKeysResourceWithStreamingResponse:
