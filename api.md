@@ -62,6 +62,18 @@ Methods:
 - <code title="get /v1/runs/aggregates">client.runs.<a href="./src/simplechecks/resources/runs.py">aggregates</a>(\*\*<a href="src/simplechecks/types/run_aggregates_params.py">params</a>) -> <a href="./src/simplechecks/types/run_aggregates_response.py">RunAggregatesResponse</a></code>
 - <code title="get /v1/runs/{id}/logs">client.runs.<a href="./src/simplechecks/resources/runs.py">logs</a>(id) -> JSONLDecoder[RunLogsResponse]</code>
 
+# Incidents
+
+Types:
+
+```python
+from simplechecks.types import Incident, IncidentListResponse
+```
+
+Methods:
+
+- <code title="get /v1/incidents">client.incidents.<a href="./src/simplechecks/resources/incidents.py">list</a>(\*\*<a href="src/simplechecks/types/incident_list_params.py">params</a>) -> <a href="./src/simplechecks/types/incident_list_response.py">IncidentListResponse</a></code>
+
 # Keys
 
 Types:

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0 (2026-05-10)
+
+Full Changelog: [v0.2.0...v0.3.0](https://github.com/simplechecks/simplechecks-sdk-python/compare/v0.2.0...v0.3.0)
+
+### Features
+
+* **api:** api update ([af803f2](https://github.com/simplechecks/simplechecks-sdk-python/commit/af803f268c9c17dcd994c452d4e737c201809fe0))
+
 ## 0.2.0 (2026-05-10)
 
 Full Changelog: [v0.1.0...v0.2.0](https://github.com/simplechecks/simplechecks-sdk-python/compare/v0.1.0...v0.2.0)
