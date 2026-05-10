@@ -6,26 +6,39 @@ from typing import Dict
 
 import httpx
 
-from ..types import check_list_params, check_create_params, check_update_params
-from .._types import Body, Omit, Query, Headers, NoneType, NotGiven, omit, not_given
-from .._utils import path_template, maybe_transform, async_maybe_transform
-from .._compat import cached_property
-from .._resource import SyncAPIResource, AsyncAPIResource
-from .._response import (
+from .alerts import (
+    AlertsResource,
+    AsyncAlertsResource,
+    AlertsResourceWithRawResponse,
+    AsyncAlertsResourceWithRawResponse,
+    AlertsResourceWithStreamingResponse,
+    AsyncAlertsResourceWithStreamingResponse,
+)
+from ...types import check_list_params, check_create_params, check_update_params
+from ..._types import Body, Omit, Query, Headers, NoneType, NotGiven, omit, not_given
+from ..._utils import path_template, maybe_transform, async_maybe_transform
+from ..._compat import cached_property
+from ..._resource import SyncAPIResource, AsyncAPIResource
+from ..._response import (
     to_raw_response_wrapper,
     to_streamed_response_wrapper,
     async_to_raw_response_wrapper,
     async_to_streamed_response_wrapper,
 )
-from ..types.check import Check
-from .._base_client import make_request_options
-from ..types.check_list_response import CheckListResponse
+from ...pagination import SyncOffset, AsyncOffset
+from ...types.check import Check
+from ..._base_client import AsyncPaginator, make_request_options
 
 __all__ = ["ChecksResource", "AsyncChecksResource"]
 
 
 class ChecksResource(SyncAPIResource):
     """CRUD for synthetic-monitoring checks."""
+
+    @cached_property
+    def alerts(self) -> AlertsResource:
+        """Per-check alert configuration + test-fire endpoint (PR-Alerts/1)."""
+        return AlertsResource(self._client)
 
     @cached_property
     def with_raw_response(self) -> ChecksResourceWithRawResponse:
@@ -208,7 +221,7 @@ class ChecksResource(SyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> CheckListResponse:
+    ) -> SyncOffset[Check]:
         """Returns the caller's checks with simple offset pagination.
 
         `next_offset` is set
@@ -228,8 +241,9 @@ class ChecksResource(SyncAPIResource):
 
           timeout: Override the client-level default timeout for this request, in seconds
         """
-        return self._get(
+        return self._get_api_list(
             "/v1/checks",
+            page=SyncOffset[Check],
             options=make_request_options(
                 extra_headers=extra_headers,
                 extra_query=extra_query,
@@ -243,7 +257,7 @@ class ChecksResource(SyncAPIResource):
                     check_list_params.CheckListParams,
                 ),
             ),
-            cast_to=CheckListResponse,
+            model=Check,
         )
 
     def delete(
@@ -284,6 +298,11 @@ class ChecksResource(SyncAPIResource):
 
 class AsyncChecksResource(AsyncAPIResource):
     """CRUD for synthetic-monitoring checks."""
+
+    @cached_property
+    def alerts(self) -> AsyncAlertsResource:
+        """Per-check alert configuration + test-fire endpoint (PR-Alerts/1)."""
+        return AsyncAlertsResource(self._client)
 
     @cached_property
     def with_raw_response(self) -> AsyncChecksResourceWithRawResponse:
@@ -455,7 +474,7 @@ class AsyncChecksResource(AsyncAPIResource):
             cast_to=Check,
         )
 
-    async def list(
+    def list(
         self,
         *,
         limit: int | Omit = omit,
@@ -466,7 +485,7 @@ class AsyncChecksResource(AsyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> CheckListResponse:
+    ) -> AsyncPaginator[Check, AsyncOffset[Check]]:
         """Returns the caller's checks with simple offset pagination.
 
         `next_offset` is set
@@ -486,14 +505,15 @@ class AsyncChecksResource(AsyncAPIResource):
 
           timeout: Override the client-level default timeout for this request, in seconds
         """
-        return await self._get(
+        return self._get_api_list(
             "/v1/checks",
+            page=AsyncOffset[Check],
             options=make_request_options(
                 extra_headers=extra_headers,
                 extra_query=extra_query,
                 extra_body=extra_body,
                 timeout=timeout,
-                query=await async_maybe_transform(
+                query=maybe_transform(
                     {
                         "limit": limit,
                         "offset": offset,
@@ -501,7 +521,7 @@ class AsyncChecksResource(AsyncAPIResource):
                     check_list_params.CheckListParams,
                 ),
             ),
-            cast_to=CheckListResponse,
+            model=Check,
         )
 
     async def delete(
@@ -560,6 +580,11 @@ class ChecksResourceWithRawResponse:
             checks.delete,
         )
 
+    @cached_property
+    def alerts(self) -> AlertsResourceWithRawResponse:
+        """Per-check alert configuration + test-fire endpoint (PR-Alerts/1)."""
+        return AlertsResourceWithRawResponse(self._checks.alerts)
+
 
 class AsyncChecksResourceWithRawResponse:
     def __init__(self, checks: AsyncChecksResource) -> None:
@@ -580,6 +605,11 @@ class AsyncChecksResourceWithRawResponse:
         self.delete = async_to_raw_response_wrapper(
             checks.delete,
         )
+
+    @cached_property
+    def alerts(self) -> AsyncAlertsResourceWithRawResponse:
+        """Per-check alert configuration + test-fire endpoint (PR-Alerts/1)."""
+        return AsyncAlertsResourceWithRawResponse(self._checks.alerts)
 
 
 class ChecksResourceWithStreamingResponse:
@@ -602,6 +632,11 @@ class ChecksResourceWithStreamingResponse:
             checks.delete,
         )
 
+    @cached_property
+    def alerts(self) -> AlertsResourceWithStreamingResponse:
+        """Per-check alert configuration + test-fire endpoint (PR-Alerts/1)."""
+        return AlertsResourceWithStreamingResponse(self._checks.alerts)
+
 
 class AsyncChecksResourceWithStreamingResponse:
     def __init__(self, checks: AsyncChecksResource) -> None:
@@ -622,3 +657,8 @@ class AsyncChecksResourceWithStreamingResponse:
         self.delete = async_to_streamed_response_wrapper(
             checks.delete,
         )
+
+    @cached_property
+    def alerts(self) -> AsyncAlertsResourceWithStreamingResponse:
+        """Per-check alert configuration + test-fire endpoint (PR-Alerts/1)."""
+        return AsyncAlertsResourceWithStreamingResponse(self._checks.alerts)

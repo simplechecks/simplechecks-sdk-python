@@ -14,7 +14,7 @@ from .._response import (
     async_to_streamed_response_wrapper,
 )
 from .._base_client import make_request_options
-from ..types.account_retrieve_response import AccountRetrieveResponse
+from ..types.account import Account
 
 __all__ = ["AccountResource", "AsyncAccountResource"]
 
@@ -50,7 +50,7 @@ class AccountResource(SyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> AccountRetrieveResponse:
+    ) -> Account:
         """
         Returns the account row stitched together with the cached billing balance and
         the `paused` flag, so a single dashboard read fetches everything the customer's
@@ -61,7 +61,7 @@ class AccountResource(SyncAPIResource):
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=AccountRetrieveResponse,
+            cast_to=Account,
         )
 
 
@@ -96,7 +96,7 @@ class AsyncAccountResource(AsyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> AccountRetrieveResponse:
+    ) -> Account:
         """
         Returns the account row stitched together with the cached billing balance and
         the `paused` flag, so a single dashboard read fetches everything the customer's
@@ -107,7 +107,7 @@ class AsyncAccountResource(AsyncAPIResource):
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=AccountRetrieveResponse,
+            cast_to=Account,
         )
 
 

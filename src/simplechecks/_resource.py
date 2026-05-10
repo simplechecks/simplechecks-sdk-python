@@ -8,13 +8,13 @@ from typing import TYPE_CHECKING
 import anyio
 
 if TYPE_CHECKING:
-    from ._client import Simplechecks, AsyncSimplechecks
+    from ._client import SimpleChecks, AsyncSimpleChecks
 
 
 class SyncAPIResource:
-    _client: Simplechecks
+    _client: SimpleChecks
 
-    def __init__(self, client: Simplechecks) -> None:
+    def __init__(self, client: SimpleChecks) -> None:
         self._client = client
         self._get = client.get
         self._post = client.post
@@ -28,9 +28,9 @@ class SyncAPIResource:
 
 
 class AsyncAPIResource:
-    _client: AsyncSimplechecks
+    _client: AsyncSimpleChecks
 
-    def __init__(self, client: AsyncSimplechecks) -> None:
+    def __init__(self, client: AsyncSimpleChecks) -> None:
         self._client = client
         self._get = client.get
         self._post = client.post

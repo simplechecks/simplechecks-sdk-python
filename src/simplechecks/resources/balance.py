@@ -14,34 +14,34 @@ from .._response import (
     async_to_streamed_response_wrapper,
 )
 from .._base_client import make_request_options
-from ..types.healthz_check_response import HealthzCheckResponse
+from ..types.balance import Balance
 
-__all__ = ["HealthzResource", "AsyncHealthzResource"]
+__all__ = ["BalanceResource", "AsyncBalanceResource"]
 
 
-class HealthzResource(SyncAPIResource):
-    """Liveness + readiness."""
+class BalanceResource(SyncAPIResource):
+    """Run-credit balance + Stripe Checkout for top-ups."""
 
     @cached_property
-    def with_raw_response(self) -> HealthzResourceWithRawResponse:
+    def with_raw_response(self) -> BalanceResourceWithRawResponse:
         """
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
         For more information, see https://www.github.com/simplechecks/simplechecks-sdk-python#accessing-raw-response-data-eg-headers
         """
-        return HealthzResourceWithRawResponse(self)
+        return BalanceResourceWithRawResponse(self)
 
     @cached_property
-    def with_streaming_response(self) -> HealthzResourceWithStreamingResponse:
+    def with_streaming_response(self) -> BalanceResourceWithStreamingResponse:
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
         For more information, see https://www.github.com/simplechecks/simplechecks-sdk-python#with_streaming_response
         """
-        return HealthzResourceWithStreamingResponse(self)
+        return BalanceResourceWithStreamingResponse(self)
 
-    def check(
+    def retrieve(
         self,
         *,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
@@ -50,49 +50,44 @@ class HealthzResource(SyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> HealthzCheckResponse:
-        """Returns 200 when the process is up.
-
-        webapp/api is stateless, so "the process is
-        up" is the entire health story; Kubernetes uses this for both liveness and
-        readiness probes. Public — no auth.
+    ) -> Balance:
+        """
+        Thin sibling of GET /v1/account that returns just the balance and paused flag.
+        The CLI's `sc balance` command pulls this so it doesn't have to fetch the full
+        account row each time. Requires the `account:read` scope.
         """
         return self._get(
-            "/healthz",
+            "/v1/balance",
             options=make_request_options(
-                extra_headers=extra_headers,
-                extra_query=extra_query,
-                extra_body=extra_body,
-                timeout=timeout,
-                security={},
+                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=HealthzCheckResponse,
+            cast_to=Balance,
         )
 
 
-class AsyncHealthzResource(AsyncAPIResource):
-    """Liveness + readiness."""
+class AsyncBalanceResource(AsyncAPIResource):
+    """Run-credit balance + Stripe Checkout for top-ups."""
 
     @cached_property
-    def with_raw_response(self) -> AsyncHealthzResourceWithRawResponse:
+    def with_raw_response(self) -> AsyncBalanceResourceWithRawResponse:
         """
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
         For more information, see https://www.github.com/simplechecks/simplechecks-sdk-python#accessing-raw-response-data-eg-headers
         """
-        return AsyncHealthzResourceWithRawResponse(self)
+        return AsyncBalanceResourceWithRawResponse(self)
 
     @cached_property
-    def with_streaming_response(self) -> AsyncHealthzResourceWithStreamingResponse:
+    def with_streaming_response(self) -> AsyncBalanceResourceWithStreamingResponse:
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
         For more information, see https://www.github.com/simplechecks/simplechecks-sdk-python#with_streaming_response
         """
-        return AsyncHealthzResourceWithStreamingResponse(self)
+        return AsyncBalanceResourceWithStreamingResponse(self)
 
-    async def check(
+    async def retrieve(
         self,
         *,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
@@ -101,57 +96,52 @@ class AsyncHealthzResource(AsyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> HealthzCheckResponse:
-        """Returns 200 when the process is up.
-
-        webapp/api is stateless, so "the process is
-        up" is the entire health story; Kubernetes uses this for both liveness and
-        readiness probes. Public — no auth.
+    ) -> Balance:
+        """
+        Thin sibling of GET /v1/account that returns just the balance and paused flag.
+        The CLI's `sc balance` command pulls this so it doesn't have to fetch the full
+        account row each time. Requires the `account:read` scope.
         """
         return await self._get(
-            "/healthz",
+            "/v1/balance",
             options=make_request_options(
-                extra_headers=extra_headers,
-                extra_query=extra_query,
-                extra_body=extra_body,
-                timeout=timeout,
-                security={},
+                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=HealthzCheckResponse,
+            cast_to=Balance,
         )
 
 
-class HealthzResourceWithRawResponse:
-    def __init__(self, healthz: HealthzResource) -> None:
-        self._healthz = healthz
+class BalanceResourceWithRawResponse:
+    def __init__(self, balance: BalanceResource) -> None:
+        self._balance = balance
 
-        self.check = to_raw_response_wrapper(
-            healthz.check,
+        self.retrieve = to_raw_response_wrapper(
+            balance.retrieve,
         )
 
 
-class AsyncHealthzResourceWithRawResponse:
-    def __init__(self, healthz: AsyncHealthzResource) -> None:
-        self._healthz = healthz
+class AsyncBalanceResourceWithRawResponse:
+    def __init__(self, balance: AsyncBalanceResource) -> None:
+        self._balance = balance
 
-        self.check = async_to_raw_response_wrapper(
-            healthz.check,
+        self.retrieve = async_to_raw_response_wrapper(
+            balance.retrieve,
         )
 
 
-class HealthzResourceWithStreamingResponse:
-    def __init__(self, healthz: HealthzResource) -> None:
-        self._healthz = healthz
+class BalanceResourceWithStreamingResponse:
+    def __init__(self, balance: BalanceResource) -> None:
+        self._balance = balance
 
-        self.check = to_streamed_response_wrapper(
-            healthz.check,
+        self.retrieve = to_streamed_response_wrapper(
+            balance.retrieve,
         )
 
 
-class AsyncHealthzResourceWithStreamingResponse:
-    def __init__(self, healthz: AsyncHealthzResource) -> None:
-        self._healthz = healthz
+class AsyncBalanceResourceWithStreamingResponse:
+    def __init__(self, balance: AsyncBalanceResource) -> None:
+        self._balance = balance
 
-        self.check = async_to_streamed_response_wrapper(
-            healthz.check,
+        self.retrieve = async_to_streamed_response_wrapper(
+            balance.retrieve,
         )
