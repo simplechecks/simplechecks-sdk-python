@@ -2,8 +2,10 @@
 
 from .._models import BaseModel
 
-__all__ = ["HealthzCheckResponse"]
+__all__ = ["MaintenanceWindow"]
 
 
-class HealthzCheckResponse(BaseModel):
-    status: str
+class MaintenanceWindow(BaseModel):
+    end_unix_ms: int
+
+    start_unix_ms: int

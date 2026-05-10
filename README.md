@@ -1,9 +1,9 @@
-# Simplechecks Python API library
+# Simple Checks Python API library
 
 <!-- prettier-ignore -->
 [![PyPI version](https://img.shields.io/pypi/v/simplechecks.svg?label=pypi%20(stable))](https://pypi.org/project/simplechecks/)
 
-The Simplechecks Python library provides convenient access to the Simplechecks REST API from any Python 3.9+
+The Simple Checks Python library provides convenient access to the Simple Checks REST API from any Python 3.9+
 application. The library includes type definitions for all request params and response fields,
 and offers both synchronous and asynchronous clients powered by [httpx](https://github.com/encode/httpx).
 
@@ -11,7 +11,7 @@ It is generated with [Stainless](https://www.stainless.com/).
 
 ## Documentation
 
-The REST API documentation can be found on [simplechecks.com](https://simplechecks.com). The full API of this library can be found in [api.md](api.md).
+The REST API documentation can be found on [api.simplechecks.com](https://api.simplechecks.com/docs). The full API of this library can be found in [api.md](api.md).
 
 ## Installation
 
@@ -25,15 +25,17 @@ pip install simplechecks
 The full API of this library can be found in [api.md](api.md).
 
 ```python
-from simplechecks import Simplechecks
+import os
+from simplechecks import SimpleChecks
 
-client = Simplechecks(
+client = SimpleChecks(
+    api_key=os.environ.get("SIMPLECHECKS_API_KEY"),  # This is the default and can be omitted
     # defaults to "production".
-    environment="environment_1",
+    environment="local",
 )
 
-response = client.healthz.check()
-print(response.status)
+checks = client.checks.list()
+print(checks.checks)
 ```
 
 While you can provide an `api_key` keyword argument,
@@ -43,21 +45,23 @@ so that your API Key is not stored in source control.
 
 ## Async usage
 
-Simply import `AsyncSimplechecks` instead of `Simplechecks` and use `await` with each API call:
+Simply import `AsyncSimpleChecks` instead of `SimpleChecks` and use `await` with each API call:
 
 ```python
+import os
 import asyncio
-from simplechecks import AsyncSimplechecks
+from simplechecks import AsyncSimpleChecks
 
-client = AsyncSimplechecks(
+client = AsyncSimpleChecks(
+    api_key=os.environ.get("SIMPLECHECKS_API_KEY"),  # This is the default and can be omitted
     # defaults to "production".
-    environment="environment_1",
+    environment="local",
 )
 
 
 async def main() -> None:
-    response = await client.healthz.check()
-    print(response.status)
+    checks = await client.checks.list()
+    print(checks.checks)
 
 
 asyncio.run(main())
@@ -79,17 +83,19 @@ pip install simplechecks[aiohttp]
 Then you can enable it by instantiating the client with `http_client=DefaultAioHttpClient()`:
 
 ```python
+import os
 import asyncio
 from simplechecks import DefaultAioHttpClient
-from simplechecks import AsyncSimplechecks
+from simplechecks import AsyncSimpleChecks
 
 
 async def main() -> None:
-    async with AsyncSimplechecks(
+    async with AsyncSimpleChecks(
+        api_key=os.environ.get("SIMPLECHECKS_API_KEY"),  # This is the default and can be omitted
         http_client=DefaultAioHttpClient(),
     ) as client:
-        response = await client.healthz.check()
-        print(response.status)
+        checks = await client.checks.list()
+        print(checks.checks)
 
 
 asyncio.run(main())
@@ -115,12 +121,12 @@ All errors inherit from `simplechecks.APIError`.
 
 ```python
 import simplechecks
-from simplechecks import Simplechecks
+from simplechecks import SimpleChecks
 
-client = Simplechecks()
+client = SimpleChecks()
 
 try:
-    client.healthz.check()
+    client.account.retrieve()
 except simplechecks.APIConnectionError as e:
     print("The server could not be reached")
     print(e.__cause__)  # an underlying Exception, likely raised within httpx.
@@ -154,16 +160,16 @@ Connection errors (for example, due to a network connectivity problem), 408 Requ
 You can use the `max_retries` option to configure or disable retry settings:
 
 ```python
-from simplechecks import Simplechecks
+from simplechecks import SimpleChecks
 
 # Configure the default for all requests:
-client = Simplechecks(
+client = SimpleChecks(
     # default is 2
     max_retries=0,
 )
 
 # Or, configure per-request:
-client.with_options(max_retries=5).healthz.check()
+client.with_options(max_retries=5).account.retrieve()
 ```
 
 ### Timeouts
@@ -172,21 +178,21 @@ By default requests time out after 1 minute. You can configure this with a `time
 which accepts a float or an [`httpx.Timeout`](https://www.python-httpx.org/advanced/timeouts/#fine-tuning-the-configuration) object:
 
 ```python
-from simplechecks import Simplechecks
+from simplechecks import SimpleChecks
 
 # Configure the default for all requests:
-client = Simplechecks(
+client = SimpleChecks(
     # 20 seconds (default is 1 minute)
     timeout=20.0,
 )
 
 # More granular control:
-client = Simplechecks(
+client = SimpleChecks(
     timeout=httpx.Timeout(60.0, read=5.0, write=10.0, connect=2.0),
 )
 
 # Override per-request:
-client.with_options(timeout=5.0).healthz.check()
+client.with_options(timeout=5.0).account.retrieve()
 ```
 
 On timeout, an `APITimeoutError` is thrown.
@@ -199,10 +205,10 @@ Note that requests that time out are [retried twice by default](#retries).
 
 We use the standard library [`logging`](https://docs.python.org/3/library/logging.html) module.
 
-You can enable logging by setting the environment variable `SIMPLECHECKS_LOG` to `info`.
+You can enable logging by setting the environment variable `SIMPLE_CHECKS_LOG` to `info`.
 
 ```shell
-$ export SIMPLECHECKS_LOG=info
+$ export SIMPLE_CHECKS_LOG=info
 ```
 
 Or to `debug` for more verbose logging.
@@ -224,14 +230,14 @@ if response.my_field is None:
 The "raw" Response object can be accessed by prefixing `.with_raw_response.` to any HTTP method call, e.g.,
 
 ```py
-from simplechecks import Simplechecks
+from simplechecks import SimpleChecks
 
-client = Simplechecks()
-response = client.healthz.with_raw_response.check()
+client = SimpleChecks()
+response = client.account.with_raw_response.retrieve()
 print(response.headers.get('X-My-Header'))
 
-healthz = response.parse()  # get the object that `healthz.check()` would have returned
-print(healthz.status)
+account = response.parse()  # get the object that `account.retrieve()` would have returned
+print(account.typeid)
 ```
 
 These methods return an [`APIResponse`](https://github.com/simplechecks/simplechecks-sdk-python/tree/main/src/simplechecks/_response.py) object.
@@ -245,7 +251,7 @@ The above interface eagerly reads the full response body when you make the reque
 To stream the response body, use `.with_streaming_response` instead, which requires a context manager and only reads the response body once you call `.read()`, `.text()`, `.json()`, `.iter_bytes()`, `.iter_text()`, `.iter_lines()` or `.parse()`. In the async client, these are async methods.
 
 ```python
-with client.healthz.with_streaming_response.check() as response:
+with client.account.with_streaming_response.retrieve() as response:
     print(response.headers.get("X-My-Header"))
 
     for line in response.iter_lines():
@@ -298,10 +304,10 @@ You can directly override the [httpx client](https://www.python-httpx.org/api/#c
 
 ```python
 import httpx
-from simplechecks import Simplechecks, DefaultHttpxClient
+from simplechecks import SimpleChecks, DefaultHttpxClient
 
-client = Simplechecks(
-    # Or use the `SIMPLECHECKS_BASE_URL` env var
+client = SimpleChecks(
+    # Or use the `SIMPLE_CHECKS_BASE_URL` env var
     base_url="http://my.test.server.example.com:8083",
     http_client=DefaultHttpxClient(
         proxy="http://my.test.proxy.example.com",
@@ -321,9 +327,9 @@ client.with_options(http_client=DefaultHttpxClient(...))
 By default the library closes underlying HTTP connections whenever the client is [garbage collected](https://docs.python.org/3/reference/datamodel.html#object.__del__). You can manually close the client using the `.close()` method if desired, or with a context manager that closes when exiting.
 
 ```py
-from simplechecks import Simplechecks
+from simplechecks import SimpleChecks
 
-with Simplechecks() as client:
+with SimpleChecks() as client:
   # make requests here
   ...
 
