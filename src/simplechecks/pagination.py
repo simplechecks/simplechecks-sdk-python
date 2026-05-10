@@ -11,15 +11,15 @@ _T = TypeVar("_T")
 
 
 class SyncOffset(BaseSyncPage[_T], BasePage[_T], Generic[_T]):
-    data: List[_T]
+    checks: List[_T]
     next_offset: Optional[int] = None
 
     @override
     def _get_page_items(self) -> List[_T]:
-        data = self.data
-        if not data:
+        checks = self.checks
+        if not checks:
             return []
-        return data
+        return checks
 
     @override
     def next_page_info(self) -> Optional[PageInfo]:
@@ -34,15 +34,15 @@ class SyncOffset(BaseSyncPage[_T], BasePage[_T], Generic[_T]):
 
 
 class AsyncOffset(BaseAsyncPage[_T], BasePage[_T], Generic[_T]):
-    data: List[_T]
+    checks: List[_T]
     next_offset: Optional[int] = None
 
     @override
     def _get_page_items(self) -> List[_T]:
-        data = self.data
-        if not data:
+        checks = self.checks
+        if not checks:
             return []
-        return data
+        return checks
 
     @override
     def next_page_info(self) -> Optional[PageInfo]:

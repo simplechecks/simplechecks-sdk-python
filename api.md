@@ -15,13 +15,7 @@ Methods:
 Types:
 
 ```python
-from simplechecks.types import (
-    AlertChannel,
-    AlertConfig,
-    Check,
-    MaintenanceWindow,
-    CheckListResponse,
-)
+from simplechecks.types import AlertChannel, AlertConfig, Check, MaintenanceWindow
 ```
 
 Methods:
@@ -29,7 +23,7 @@ Methods:
 - <code title="post /v1/checks">client.checks.<a href="./src/simplechecks/resources/checks/checks.py">create</a>(\*\*<a href="src/simplechecks/types/check_create_params.py">params</a>) -> <a href="./src/simplechecks/types/check.py">Check</a></code>
 - <code title="get /v1/checks/{id}">client.checks.<a href="./src/simplechecks/resources/checks/checks.py">retrieve</a>(id) -> <a href="./src/simplechecks/types/check.py">Check</a></code>
 - <code title="patch /v1/checks/{id}">client.checks.<a href="./src/simplechecks/resources/checks/checks.py">update</a>(id, \*\*<a href="src/simplechecks/types/check_update_params.py">params</a>) -> <a href="./src/simplechecks/types/check.py">Check</a></code>
-- <code title="get /v1/checks">client.checks.<a href="./src/simplechecks/resources/checks/checks.py">list</a>(\*\*<a href="src/simplechecks/types/check_list_params.py">params</a>) -> <a href="./src/simplechecks/types/check_list_response.py">CheckListResponse</a></code>
+- <code title="get /v1/checks">client.checks.<a href="./src/simplechecks/resources/checks/checks.py">list</a>(\*\*<a href="src/simplechecks/types/check_list_params.py">params</a>) -> <a href="./src/simplechecks/types/check.py">SyncOffset[Check]</a></code>
 - <code title="delete /v1/checks/{id}">client.checks.<a href="./src/simplechecks/resources/checks/checks.py">delete</a>(id) -> None</code>
 
 ## Alerts

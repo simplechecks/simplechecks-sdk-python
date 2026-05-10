@@ -20,7 +20,6 @@ from .run_logs_response import RunLogsResponse as RunLogsResponse
 from .maintenance_window import MaintenanceWindow as MaintenanceWindow
 from .alert_channel_param import AlertChannelParam as AlertChannelParam
 from .check_create_params import CheckCreateParams as CheckCreateParams
-from .check_list_response import CheckListResponse as CheckListResponse
 from .check_update_params import CheckUpdateParams as CheckUpdateParams
 from .key_create_response import KeyCreateResponse as KeyCreateResponse
 from .run_aggregates_params import RunAggregatesParams as RunAggregatesParams
