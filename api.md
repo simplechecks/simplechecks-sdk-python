@@ -111,3 +111,31 @@ from simplechecks.types import CheckoutSession
 Methods:
 
 - <code title="post /v1/checkout-session">client.checkout_sessions.<a href="./src/simplechecks/resources/checkout_sessions.py">create</a>(\*\*<a href="src/simplechecks/types/checkout_session_create_params.py">params</a>) -> <a href="./src/simplechecks/types/checkout_session.py">CheckoutSession</a></code>
+
+# Members
+
+Types:
+
+```python
+from simplechecks.types import Invitation, Member, MemberListResponse
+```
+
+Methods:
+
+- <code title="patch /v1/members/{user_id}">client.members.<a href="./src/simplechecks/resources/members/members.py">update</a>(user_id, \*\*<a href="src/simplechecks/types/member_update_params.py">params</a>) -> <a href="./src/simplechecks/types/member.py">Member</a></code>
+- <code title="get /v1/members">client.members.<a href="./src/simplechecks/resources/members/members.py">list</a>() -> <a href="./src/simplechecks/types/member_list_response.py">MemberListResponse</a></code>
+- <code title="delete /v1/members/{user_id}">client.members.<a href="./src/simplechecks/resources/members/members.py">remove</a>(user_id) -> None</code>
+
+## Invitations
+
+Types:
+
+```python
+from simplechecks.types.members import InvitationListResponse
+```
+
+Methods:
+
+- <code title="post /v1/invitations">client.members.invitations.<a href="./src/simplechecks/resources/members/invitations.py">create</a>(\*\*<a href="src/simplechecks/types/members/invitation_create_params.py">params</a>) -> <a href="./src/simplechecks/types/invitation.py">Invitation</a></code>
+- <code title="get /v1/invitations">client.members.invitations.<a href="./src/simplechecks/resources/members/invitations.py">list</a>() -> <a href="./src/simplechecks/types/members/invitation_list_response.py">InvitationListResponse</a></code>
+- <code title="delete /v1/invitations/{id}">client.members.invitations.<a href="./src/simplechecks/resources/members/invitations.py">revoke</a>(id) -> None</code>

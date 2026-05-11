@@ -40,6 +40,14 @@ from .balance import (
     BalanceResourceWithStreamingResponse,
     AsyncBalanceResourceWithStreamingResponse,
 )
+from .members import (
+    MembersResource,
+    AsyncMembersResource,
+    MembersResourceWithRawResponse,
+    AsyncMembersResourceWithRawResponse,
+    MembersResourceWithStreamingResponse,
+    AsyncMembersResourceWithStreamingResponse,
+)
 from .incidents import (
     IncidentsResource,
     AsyncIncidentsResource,
@@ -100,4 +108,10 @@ __all__ = [
     "AsyncCheckoutSessionsResourceWithRawResponse",
     "CheckoutSessionsResourceWithStreamingResponse",
     "AsyncCheckoutSessionsResourceWithStreamingResponse",
+    "MembersResource",
+    "AsyncMembersResource",
+    "MembersResourceWithRawResponse",
+    "AsyncMembersResourceWithRawResponse",
+    "MembersResourceWithStreamingResponse",
+    "AsyncMembersResourceWithStreamingResponse",
 ]

@@ -36,13 +36,14 @@ from ._base_client import (
 )
 
 if TYPE_CHECKING:
-    from .resources import keys, runs, checks, account, balance, incidents, checkout_sessions
+    from .resources import keys, runs, checks, account, balance, members, incidents, checkout_sessions
     from .resources.keys import KeysResource, AsyncKeysResource
     from .resources.runs import RunsResource, AsyncRunsResource
     from .resources.account import AccountResource, AsyncAccountResource
     from .resources.balance import BalanceResource, AsyncBalanceResource
     from .resources.incidents import IncidentsResource, AsyncIncidentsResource
     from .resources.checks.checks import ChecksResource, AsyncChecksResource
+    from .resources.members.members import MembersResource, AsyncMembersResource
     from .resources.checkout_sessions import CheckoutSessionsResource, AsyncCheckoutSessionsResource
 
 __all__ = [
@@ -195,6 +196,19 @@ class SimpleChecks(SyncAPIClient):
         from .resources.checkout_sessions import CheckoutSessionsResource
 
         return CheckoutSessionsResource(self)
+
+    @cached_property
+    def members(self) -> MembersResource:
+        """Manage who has access to an account and at what role
+        (PR-Members/2).
+
+        Five roles: owner / admin / member / billing /
+        viewer. Owner is the strict superset of all other roles' scopes;
+        every account always has at least one owner.
+        """
+        from .resources.members import MembersResource
+
+        return MembersResource(self)
 
     @cached_property
     def with_raw_response(self) -> SimpleChecksWithRawResponse:
@@ -456,6 +470,19 @@ class AsyncSimpleChecks(AsyncAPIClient):
         return AsyncCheckoutSessionsResource(self)
 
     @cached_property
+    def members(self) -> AsyncMembersResource:
+        """Manage who has access to an account and at what role
+        (PR-Members/2).
+
+        Five roles: owner / admin / member / billing /
+        viewer. Owner is the strict superset of all other roles' scopes;
+        every account always has at least one owner.
+        """
+        from .resources.members import AsyncMembersResource
+
+        return AsyncMembersResource(self)
+
+    @cached_property
     def with_raw_response(self) -> AsyncSimpleChecksWithRawResponse:
         return AsyncSimpleChecksWithRawResponse(self)
 
@@ -636,6 +663,19 @@ class SimpleChecksWithRawResponse:
 
         return CheckoutSessionsResourceWithRawResponse(self._client.checkout_sessions)
 
+    @cached_property
+    def members(self) -> members.MembersResourceWithRawResponse:
+        """Manage who has access to an account and at what role
+        (PR-Members/2).
+
+        Five roles: owner / admin / member / billing /
+        viewer. Owner is the strict superset of all other roles' scopes;
+        every account always has at least one owner.
+        """
+        from .resources.members import MembersResourceWithRawResponse
+
+        return MembersResourceWithRawResponse(self._client.members)
+
 
 class AsyncSimpleChecksWithRawResponse:
     _client: AsyncSimpleChecks
@@ -691,6 +731,19 @@ class AsyncSimpleChecksWithRawResponse:
         from .resources.checkout_sessions import AsyncCheckoutSessionsResourceWithRawResponse
 
         return AsyncCheckoutSessionsResourceWithRawResponse(self._client.checkout_sessions)
+
+    @cached_property
+    def members(self) -> members.AsyncMembersResourceWithRawResponse:
+        """Manage who has access to an account and at what role
+        (PR-Members/2).
+
+        Five roles: owner / admin / member / billing /
+        viewer. Owner is the strict superset of all other roles' scopes;
+        every account always has at least one owner.
+        """
+        from .resources.members import AsyncMembersResourceWithRawResponse
+
+        return AsyncMembersResourceWithRawResponse(self._client.members)
 
 
 class SimpleChecksWithStreamedResponse:
@@ -748,6 +801,19 @@ class SimpleChecksWithStreamedResponse:
 
         return CheckoutSessionsResourceWithStreamingResponse(self._client.checkout_sessions)
 
+    @cached_property
+    def members(self) -> members.MembersResourceWithStreamingResponse:
+        """Manage who has access to an account and at what role
+        (PR-Members/2).
+
+        Five roles: owner / admin / member / billing /
+        viewer. Owner is the strict superset of all other roles' scopes;
+        every account always has at least one owner.
+        """
+        from .resources.members import MembersResourceWithStreamingResponse
+
+        return MembersResourceWithStreamingResponse(self._client.members)
+
 
 class AsyncSimpleChecksWithStreamedResponse:
     _client: AsyncSimpleChecks
@@ -803,6 +869,19 @@ class AsyncSimpleChecksWithStreamedResponse:
         from .resources.checkout_sessions import AsyncCheckoutSessionsResourceWithStreamingResponse
 
         return AsyncCheckoutSessionsResourceWithStreamingResponse(self._client.checkout_sessions)
+
+    @cached_property
+    def members(self) -> members.AsyncMembersResourceWithStreamingResponse:
+        """Manage who has access to an account and at what role
+        (PR-Members/2).
+
+        Five roles: owner / admin / member / billing /
+        viewer. Owner is the strict superset of all other roles' scopes;
+        every account always has at least one owner.
+        """
+        from .resources.members import AsyncMembersResourceWithStreamingResponse
+
+        return AsyncMembersResourceWithStreamingResponse(self._client.members)
 
 
 Client = SimpleChecks
