@@ -36,12 +36,13 @@ from ._base_client import (
 )
 
 if TYPE_CHECKING:
-    from .resources import keys, runs, checks, account, balance, members, incidents, checkout_sessions
+    from .resources import keys, runs, checks, account, balance, members, incidents, locations, checkout_sessions
     from .resources.keys import KeysResource, AsyncKeysResource
     from .resources.runs import RunsResource, AsyncRunsResource
     from .resources.account import AccountResource, AsyncAccountResource
     from .resources.balance import BalanceResource, AsyncBalanceResource
     from .resources.incidents import IncidentsResource, AsyncIncidentsResource
+    from .resources.locations import LocationsResource, AsyncLocationsResource
     from .resources.checks.checks import ChecksResource, AsyncChecksResource
     from .resources.members.members import MembersResource, AsyncMembersResource
     from .resources.checkout_sessions import CheckoutSessionsResource, AsyncCheckoutSessionsResource
@@ -209,6 +210,17 @@ class SimpleChecks(SyncAPIClient):
         from .resources.members import MembersResource
 
         return MembersResource(self)
+
+    @cached_property
+    def locations(self) -> LocationsResource:
+        """
+        Catalog of (provider, location) deployments Simple Checks runs
+        checks from, with geographic metadata + live status. Used to
+        drive the region picker and the dashboard's locations map.
+        """
+        from .resources.locations import LocationsResource
+
+        return LocationsResource(self)
 
     @cached_property
     def with_raw_response(self) -> SimpleChecksWithRawResponse:
@@ -483,6 +495,17 @@ class AsyncSimpleChecks(AsyncAPIClient):
         return AsyncMembersResource(self)
 
     @cached_property
+    def locations(self) -> AsyncLocationsResource:
+        """
+        Catalog of (provider, location) deployments Simple Checks runs
+        checks from, with geographic metadata + live status. Used to
+        drive the region picker and the dashboard's locations map.
+        """
+        from .resources.locations import AsyncLocationsResource
+
+        return AsyncLocationsResource(self)
+
+    @cached_property
     def with_raw_response(self) -> AsyncSimpleChecksWithRawResponse:
         return AsyncSimpleChecksWithRawResponse(self)
 
@@ -676,6 +699,17 @@ class SimpleChecksWithRawResponse:
 
         return MembersResourceWithRawResponse(self._client.members)
 
+    @cached_property
+    def locations(self) -> locations.LocationsResourceWithRawResponse:
+        """
+        Catalog of (provider, location) deployments Simple Checks runs
+        checks from, with geographic metadata + live status. Used to
+        drive the region picker and the dashboard's locations map.
+        """
+        from .resources.locations import LocationsResourceWithRawResponse
+
+        return LocationsResourceWithRawResponse(self._client.locations)
+
 
 class AsyncSimpleChecksWithRawResponse:
     _client: AsyncSimpleChecks
@@ -744,6 +778,17 @@ class AsyncSimpleChecksWithRawResponse:
         from .resources.members import AsyncMembersResourceWithRawResponse
 
         return AsyncMembersResourceWithRawResponse(self._client.members)
+
+    @cached_property
+    def locations(self) -> locations.AsyncLocationsResourceWithRawResponse:
+        """
+        Catalog of (provider, location) deployments Simple Checks runs
+        checks from, with geographic metadata + live status. Used to
+        drive the region picker and the dashboard's locations map.
+        """
+        from .resources.locations import AsyncLocationsResourceWithRawResponse
+
+        return AsyncLocationsResourceWithRawResponse(self._client.locations)
 
 
 class SimpleChecksWithStreamedResponse:
@@ -814,6 +859,17 @@ class SimpleChecksWithStreamedResponse:
 
         return MembersResourceWithStreamingResponse(self._client.members)
 
+    @cached_property
+    def locations(self) -> locations.LocationsResourceWithStreamingResponse:
+        """
+        Catalog of (provider, location) deployments Simple Checks runs
+        checks from, with geographic metadata + live status. Used to
+        drive the region picker and the dashboard's locations map.
+        """
+        from .resources.locations import LocationsResourceWithStreamingResponse
+
+        return LocationsResourceWithStreamingResponse(self._client.locations)
+
 
 class AsyncSimpleChecksWithStreamedResponse:
     _client: AsyncSimpleChecks
@@ -882,6 +938,17 @@ class AsyncSimpleChecksWithStreamedResponse:
         from .resources.members import AsyncMembersResourceWithStreamingResponse
 
         return AsyncMembersResourceWithStreamingResponse(self._client.members)
+
+    @cached_property
+    def locations(self) -> locations.AsyncLocationsResourceWithStreamingResponse:
+        """
+        Catalog of (provider, location) deployments Simple Checks runs
+        checks from, with geographic metadata + live status. Used to
+        drive the region picker and the dashboard's locations map.
+        """
+        from .resources.locations import AsyncLocationsResourceWithStreamingResponse
+
+        return AsyncLocationsResourceWithStreamingResponse(self._client.locations)
 
 
 Client = SimpleChecks

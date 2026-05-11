@@ -56,6 +56,14 @@ from .incidents import (
     IncidentsResourceWithStreamingResponse,
     AsyncIncidentsResourceWithStreamingResponse,
 )
+from .locations import (
+    LocationsResource,
+    AsyncLocationsResource,
+    LocationsResourceWithRawResponse,
+    AsyncLocationsResourceWithRawResponse,
+    LocationsResourceWithStreamingResponse,
+    AsyncLocationsResourceWithStreamingResponse,
+)
 from .checkout_sessions import (
     CheckoutSessionsResource,
     AsyncCheckoutSessionsResource,
@@ -114,4 +122,10 @@ __all__ = [
     "AsyncMembersResourceWithRawResponse",
     "MembersResourceWithStreamingResponse",
     "AsyncMembersResourceWithStreamingResponse",
+    "LocationsResource",
+    "AsyncLocationsResource",
+    "LocationsResourceWithRawResponse",
+    "AsyncLocationsResourceWithRawResponse",
+    "LocationsResourceWithStreamingResponse",
+    "AsyncLocationsResourceWithStreamingResponse",
 ]
