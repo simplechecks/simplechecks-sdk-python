@@ -139,3 +139,15 @@ Methods:
 - <code title="post /v1/invitations">client.members.invitations.<a href="./src/simplechecks/resources/members/invitations.py">create</a>(\*\*<a href="src/simplechecks/types/members/invitation_create_params.py">params</a>) -> <a href="./src/simplechecks/types/invitation.py">Invitation</a></code>
 - <code title="get /v1/invitations">client.members.invitations.<a href="./src/simplechecks/resources/members/invitations.py">list</a>() -> <a href="./src/simplechecks/types/members/invitation_list_response.py">InvitationListResponse</a></code>
 - <code title="delete /v1/invitations/{id}">client.members.invitations.<a href="./src/simplechecks/resources/members/invitations.py">revoke</a>(id) -> None</code>
+
+# Locations
+
+Types:
+
+```python
+from simplechecks.types import Location, LocationListResponse
+```
+
+Methods:
+
+- <code title="get /v1/locations">client.locations.<a href="./src/simplechecks/resources/locations.py">list</a>() -> <a href="./src/simplechecks/types/location_list_response.py">LocationListResponse</a></code>
