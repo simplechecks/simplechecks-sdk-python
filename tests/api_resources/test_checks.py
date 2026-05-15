@@ -22,9 +22,7 @@ class TestChecks:
     def test_method_create(self, client: SimpleChecks) -> None:
         check = client.checks.create(
             enabled=True,
-            location="location",
             name="name",
-            provider="provider",
             schedule="*/5 * * * *",
             target_url="https://example.com",
             type="http",
@@ -35,14 +33,15 @@ class TestChecks:
     def test_method_create_with_all_params(self, client: SimpleChecks) -> None:
         check = client.checks.create(
             enabled=True,
-            location="location",
             name="name",
-            provider="provider",
             schedule="*/5 * * * *",
             target_url="https://example.com",
             type="http",
             artifact_url="artifact_url",
             config={"foo": "bar"},
+            location="location",
+            locations=["aws:us-east-1", "hetzner:fsn1"],
+            provider="provider",
             timeout_ms=0,
         )
         assert_matches_type(Check, check, path=["response"])
@@ -51,9 +50,7 @@ class TestChecks:
     def test_raw_response_create(self, client: SimpleChecks) -> None:
         response = client.checks.with_raw_response.create(
             enabled=True,
-            location="location",
             name="name",
-            provider="provider",
             schedule="*/5 * * * *",
             target_url="https://example.com",
             type="http",
@@ -68,9 +65,7 @@ class TestChecks:
     def test_streaming_response_create(self, client: SimpleChecks) -> None:
         with client.checks.with_streaming_response.create(
             enabled=True,
-            location="location",
             name="name",
-            provider="provider",
             schedule="*/5 * * * *",
             target_url="https://example.com",
             type="http",
@@ -135,6 +130,7 @@ class TestChecks:
             artifact_url="artifact_url",
             config={"foo": "bar"},
             enabled=True,
+            locations=["string"],
             name="name",
             schedule="schedule",
             target_url="https://example.com",
@@ -255,9 +251,7 @@ class TestAsyncChecks:
     async def test_method_create(self, async_client: AsyncSimpleChecks) -> None:
         check = await async_client.checks.create(
             enabled=True,
-            location="location",
             name="name",
-            provider="provider",
             schedule="*/5 * * * *",
             target_url="https://example.com",
             type="http",
@@ -268,14 +262,15 @@ class TestAsyncChecks:
     async def test_method_create_with_all_params(self, async_client: AsyncSimpleChecks) -> None:
         check = await async_client.checks.create(
             enabled=True,
-            location="location",
             name="name",
-            provider="provider",
             schedule="*/5 * * * *",
             target_url="https://example.com",
             type="http",
             artifact_url="artifact_url",
             config={"foo": "bar"},
+            location="location",
+            locations=["aws:us-east-1", "hetzner:fsn1"],
+            provider="provider",
             timeout_ms=0,
         )
         assert_matches_type(Check, check, path=["response"])
@@ -284,9 +279,7 @@ class TestAsyncChecks:
     async def test_raw_response_create(self, async_client: AsyncSimpleChecks) -> None:
         response = await async_client.checks.with_raw_response.create(
             enabled=True,
-            location="location",
             name="name",
-            provider="provider",
             schedule="*/5 * * * *",
             target_url="https://example.com",
             type="http",
@@ -301,9 +294,7 @@ class TestAsyncChecks:
     async def test_streaming_response_create(self, async_client: AsyncSimpleChecks) -> None:
         async with async_client.checks.with_streaming_response.create(
             enabled=True,
-            location="location",
             name="name",
-            provider="provider",
             schedule="*/5 * * * *",
             target_url="https://example.com",
             type="http",
@@ -368,6 +359,7 @@ class TestAsyncChecks:
             artifact_url="artifact_url",
             config={"foo": "bar"},
             enabled=True,
+            locations=["string"],
             name="name",
             schedule="schedule",
             target_url="https://example.com",

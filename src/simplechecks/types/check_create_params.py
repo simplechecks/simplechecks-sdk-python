@@ -5,19 +5,15 @@ from __future__ import annotations
 from typing import Dict
 from typing_extensions import Required, TypedDict
 
+from .._types import SequenceNotStr
+
 __all__ = ["CheckCreateParams"]
 
 
 class CheckCreateParams(TypedDict, total=False):
     enabled: Required[bool]
 
-    location: Required[str]
-    """Provider-specific region/location."""
-
     name: Required[str]
-
-    provider: Required[str]
-    """Cloud provider (`mock`, `ec2`, `ovh`, `azure`, `gcp`, `hetzner`)."""
 
     schedule: Required[str]
 
@@ -28,5 +24,22 @@ class CheckCreateParams(TypedDict, total=False):
     artifact_url: str
 
     config: Dict[str, object]
+
+    location: str
+    """Legacy; see `provider`."""
+
+    locations: SequenceNotStr[str]
+    """
+    Preferred: array of wire-form ids (`aws:us-east-1`). Element 0 is the
+    deterministic primary. Each entry must be in the deployment catalog returned by
+    `GET /v1/locations`.
+    """
+
+    provider: str
+    """Legacy single-location shape.
+
+    Translated server-side to `locations=[<provider>:<location>]`. Kept for one
+    release cycle.
+    """
 
     timeout_ms: int
