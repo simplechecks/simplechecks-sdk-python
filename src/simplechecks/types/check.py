@@ -1,6 +1,6 @@
 # File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 from datetime import datetime
 
 from .._models import BaseModel
@@ -42,7 +42,21 @@ class Check(BaseModel):
     """Per-check-type configuration blob. Opaque on the wire."""
 
     location: Optional[str] = None
-    """Region/location on read responses is empty; populated on create requests only."""
+    """Legacy: the first location's provider-native id.
+
+    Same back-compat caveats as `provider`. Consult `locations`.
+    """
+
+    locations: Optional[List[str]] = None
+    """All locations the check runs from, in wire form (`provider:location`, e.g.
+
+    `aws:us-east-1`). Element 0 is the deterministic "primary" — order matches
+    creation.
+    """
 
     provider: Optional[str] = None
-    """Cloud provider on read responses is empty; populated on create requests only."""
+    """Legacy: the first location's provider, mirrors `locations[0]` split.
+
+    Empty on read for multi-location checks (consult `locations` instead). Kept for
+    one release cycle of SDK back-compat.
+    """
