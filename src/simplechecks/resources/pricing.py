@@ -14,32 +14,30 @@ from .._response import (
     async_to_streamed_response_wrapper,
 )
 from .._base_client import make_request_options
-from ..types.balance import Balance
+from ..types.pricing import Pricing
 
-__all__ = ["BalanceResource", "AsyncBalanceResource"]
+__all__ = ["PricingResource", "AsyncPricingResource"]
 
 
-class BalanceResource(SyncAPIResource):
-    """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
-
+class PricingResource(SyncAPIResource):
     @cached_property
-    def with_raw_response(self) -> BalanceResourceWithRawResponse:
+    def with_raw_response(self) -> PricingResourceWithRawResponse:
         """
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
         For more information, see https://www.github.com/simplechecks/simplechecks-sdk-python#accessing-raw-response-data-eg-headers
         """
-        return BalanceResourceWithRawResponse(self)
+        return PricingResourceWithRawResponse(self)
 
     @cached_property
-    def with_streaming_response(self) -> BalanceResourceWithStreamingResponse:
+    def with_streaming_response(self) -> PricingResourceWithStreamingResponse:
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
         For more information, see https://www.github.com/simplechecks/simplechecks-sdk-python#with_streaming_response
         """
-        return BalanceResourceWithStreamingResponse(self)
+        return PricingResourceWithStreamingResponse(self)
 
     def retrieve(
         self,
@@ -50,42 +48,49 @@ class BalanceResource(SyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> Balance:
+    ) -> Pricing:
         """
-        Thin sibling of GET /v1/account that returns just the balance and paused flag.
-        The CLI's `sc balance` command pulls this so it doesn't have to fetch the full
-        account row each time. Requires the `account:read` scope.
+        Returns the active token-pricing table so a client can show the per-provider
+        cost of a check at configuration time. The cost of one run is
+        `floor(weight × multiplier_milli / 1000)`, where `weight` is the check type's
+        compute weight plus its artifact-egress component, and the multiplier resolves
+        `(provider, location)` → `(provider, "")` → `1.0` (returned as `1000` milli).
+        The result equals what metering debits, so a UI preview is exact.
+
+        The provider multiplier is the customer-facing cost lever: cheaper providers
+        (e.g. OVH, Hetzner) carry a multiplier below 1.0. Reads of this table are free.
+
+        Requires the `account:read` scope — pricing is incidental to account/check
+        configuration, not a per-check write.
         """
         return self._get(
-            "/v1/balance",
+            "/v1/pricing",
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=Balance,
+            cast_to=Pricing,
         )
 
 
-class AsyncBalanceResource(AsyncAPIResource):
-    """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
-
+class AsyncPricingResource(AsyncAPIResource):
     @cached_property
-    def with_raw_response(self) -> AsyncBalanceResourceWithRawResponse:
+    def with_raw_response(self) -> AsyncPricingResourceWithRawResponse:
         """
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
         For more information, see https://www.github.com/simplechecks/simplechecks-sdk-python#accessing-raw-response-data-eg-headers
         """
-        return AsyncBalanceResourceWithRawResponse(self)
+        return AsyncPricingResourceWithRawResponse(self)
 
     @cached_property
-    def with_streaming_response(self) -> AsyncBalanceResourceWithStreamingResponse:
+    def with_streaming_response(self) -> AsyncPricingResourceWithStreamingResponse:
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
         For more information, see https://www.github.com/simplechecks/simplechecks-sdk-python#with_streaming_response
         """
-        return AsyncBalanceResourceWithStreamingResponse(self)
+        return AsyncPricingResourceWithStreamingResponse(self)
 
     async def retrieve(
         self,
@@ -96,52 +101,61 @@ class AsyncBalanceResource(AsyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> Balance:
+    ) -> Pricing:
         """
-        Thin sibling of GET /v1/account that returns just the balance and paused flag.
-        The CLI's `sc balance` command pulls this so it doesn't have to fetch the full
-        account row each time. Requires the `account:read` scope.
+        Returns the active token-pricing table so a client can show the per-provider
+        cost of a check at configuration time. The cost of one run is
+        `floor(weight × multiplier_milli / 1000)`, where `weight` is the check type's
+        compute weight plus its artifact-egress component, and the multiplier resolves
+        `(provider, location)` → `(provider, "")` → `1.0` (returned as `1000` milli).
+        The result equals what metering debits, so a UI preview is exact.
+
+        The provider multiplier is the customer-facing cost lever: cheaper providers
+        (e.g. OVH, Hetzner) carry a multiplier below 1.0. Reads of this table are free.
+
+        Requires the `account:read` scope — pricing is incidental to account/check
+        configuration, not a per-check write.
         """
         return await self._get(
-            "/v1/balance",
+            "/v1/pricing",
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=Balance,
+            cast_to=Pricing,
         )
 
 
-class BalanceResourceWithRawResponse:
-    def __init__(self, balance: BalanceResource) -> None:
-        self._balance = balance
+class PricingResourceWithRawResponse:
+    def __init__(self, pricing: PricingResource) -> None:
+        self._pricing = pricing
 
         self.retrieve = to_raw_response_wrapper(
-            balance.retrieve,
+            pricing.retrieve,
         )
 
 
-class AsyncBalanceResourceWithRawResponse:
-    def __init__(self, balance: AsyncBalanceResource) -> None:
-        self._balance = balance
+class AsyncPricingResourceWithRawResponse:
+    def __init__(self, pricing: AsyncPricingResource) -> None:
+        self._pricing = pricing
 
         self.retrieve = async_to_raw_response_wrapper(
-            balance.retrieve,
+            pricing.retrieve,
         )
 
 
-class BalanceResourceWithStreamingResponse:
-    def __init__(self, balance: BalanceResource) -> None:
-        self._balance = balance
+class PricingResourceWithStreamingResponse:
+    def __init__(self, pricing: PricingResource) -> None:
+        self._pricing = pricing
 
         self.retrieve = to_streamed_response_wrapper(
-            balance.retrieve,
+            pricing.retrieve,
         )
 
 
-class AsyncBalanceResourceWithStreamingResponse:
-    def __init__(self, balance: AsyncBalanceResource) -> None:
-        self._balance = balance
+class AsyncPricingResourceWithStreamingResponse:
+    def __init__(self, pricing: AsyncPricingResource) -> None:
+        self._pricing = pricing
 
         self.retrieve = async_to_streamed_response_wrapper(
-            balance.retrieve,
+            pricing.retrieve,
         )

@@ -112,6 +112,18 @@ Methods:
 
 - <code title="post /v1/checkout-session">client.checkout_sessions.<a href="./src/simplechecks/resources/checkout_sessions.py">create</a>(\*\*<a href="src/simplechecks/types/checkout_session_create_params.py">params</a>) -> <a href="./src/simplechecks/types/checkout_session.py">CheckoutSession</a></code>
 
+# Purchases
+
+Types:
+
+```python
+from simplechecks.types import Purchase, PurchaseListResponse
+```
+
+Methods:
+
+- <code title="get /v1/purchases">client.purchases.<a href="./src/simplechecks/resources/purchases.py">list</a>(\*\*<a href="src/simplechecks/types/purchase_list_params.py">params</a>) -> <a href="./src/simplechecks/types/purchase_list_response.py">PurchaseListResponse</a></code>
+
 # Members
 
 Types:
@@ -151,3 +163,15 @@ from simplechecks.types import Location, LocationListResponse
 Methods:
 
 - <code title="get /v1/locations">client.locations.<a href="./src/simplechecks/resources/locations.py">list</a>() -> <a href="./src/simplechecks/types/location_list_response.py">LocationListResponse</a></code>
+
+# Pricing
+
+Types:
+
+```python
+from simplechecks.types import Pricing
+```
+
+Methods:
+
+- <code title="get /v1/pricing">client.pricing.<a href="./src/simplechecks/resources/pricing.py">retrieve</a>() -> <a href="./src/simplechecks/types/pricing.py">Pricing</a></code>

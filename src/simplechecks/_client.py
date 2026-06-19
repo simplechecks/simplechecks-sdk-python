@@ -36,13 +36,27 @@ from ._base_client import (
 )
 
 if TYPE_CHECKING:
-    from .resources import keys, runs, checks, account, balance, members, incidents, locations, checkout_sessions
+    from .resources import (
+        keys,
+        runs,
+        checks,
+        account,
+        balance,
+        members,
+        pricing,
+        incidents,
+        locations,
+        purchases,
+        checkout_sessions,
+    )
     from .resources.keys import KeysResource, AsyncKeysResource
     from .resources.runs import RunsResource, AsyncRunsResource
     from .resources.account import AccountResource, AsyncAccountResource
     from .resources.balance import BalanceResource, AsyncBalanceResource
+    from .resources.pricing import PricingResource, AsyncPricingResource
     from .resources.incidents import IncidentsResource, AsyncIncidentsResource
     from .resources.locations import LocationsResource, AsyncLocationsResource
+    from .resources.purchases import PurchasesResource, AsyncPurchasesResource
     from .resources.checks.checks import ChecksResource, AsyncChecksResource
     from .resources.members.members import MembersResource, AsyncMembersResource
     from .resources.checkout_sessions import CheckoutSessionsResource, AsyncCheckoutSessionsResource
@@ -186,17 +200,24 @@ class SimpleChecks(SyncAPIClient):
 
     @cached_property
     def balance(self) -> BalanceResource:
-        """Run-credit balance + Stripe Checkout for top-ups."""
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
         from .resources.balance import BalanceResource
 
         return BalanceResource(self)
 
     @cached_property
     def checkout_sessions(self) -> CheckoutSessionsResource:
-        """Run-credit balance + Stripe Checkout for top-ups."""
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
         from .resources.checkout_sessions import CheckoutSessionsResource
 
         return CheckoutSessionsResource(self)
+
+    @cached_property
+    def purchases(self) -> PurchasesResource:
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
+        from .resources.purchases import PurchasesResource
+
+        return PurchasesResource(self)
 
     @cached_property
     def members(self) -> MembersResource:
@@ -221,6 +242,12 @@ class SimpleChecks(SyncAPIClient):
         from .resources.locations import LocationsResource
 
         return LocationsResource(self)
+
+    @cached_property
+    def pricing(self) -> PricingResource:
+        from .resources.pricing import PricingResource
+
+        return PricingResource(self)
 
     @cached_property
     def with_raw_response(self) -> SimpleChecksWithRawResponse:
@@ -469,17 +496,24 @@ class AsyncSimpleChecks(AsyncAPIClient):
 
     @cached_property
     def balance(self) -> AsyncBalanceResource:
-        """Run-credit balance + Stripe Checkout for top-ups."""
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
         from .resources.balance import AsyncBalanceResource
 
         return AsyncBalanceResource(self)
 
     @cached_property
     def checkout_sessions(self) -> AsyncCheckoutSessionsResource:
-        """Run-credit balance + Stripe Checkout for top-ups."""
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
         from .resources.checkout_sessions import AsyncCheckoutSessionsResource
 
         return AsyncCheckoutSessionsResource(self)
+
+    @cached_property
+    def purchases(self) -> AsyncPurchasesResource:
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
+        from .resources.purchases import AsyncPurchasesResource
+
+        return AsyncPurchasesResource(self)
 
     @cached_property
     def members(self) -> AsyncMembersResource:
@@ -504,6 +538,12 @@ class AsyncSimpleChecks(AsyncAPIClient):
         from .resources.locations import AsyncLocationsResource
 
         return AsyncLocationsResource(self)
+
+    @cached_property
+    def pricing(self) -> AsyncPricingResource:
+        from .resources.pricing import AsyncPricingResource
+
+        return AsyncPricingResource(self)
 
     @cached_property
     def with_raw_response(self) -> AsyncSimpleChecksWithRawResponse:
@@ -674,17 +714,24 @@ class SimpleChecksWithRawResponse:
 
     @cached_property
     def balance(self) -> balance.BalanceResourceWithRawResponse:
-        """Run-credit balance + Stripe Checkout for top-ups."""
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
         from .resources.balance import BalanceResourceWithRawResponse
 
         return BalanceResourceWithRawResponse(self._client.balance)
 
     @cached_property
     def checkout_sessions(self) -> checkout_sessions.CheckoutSessionsResourceWithRawResponse:
-        """Run-credit balance + Stripe Checkout for top-ups."""
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
         from .resources.checkout_sessions import CheckoutSessionsResourceWithRawResponse
 
         return CheckoutSessionsResourceWithRawResponse(self._client.checkout_sessions)
+
+    @cached_property
+    def purchases(self) -> purchases.PurchasesResourceWithRawResponse:
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
+        from .resources.purchases import PurchasesResourceWithRawResponse
+
+        return PurchasesResourceWithRawResponse(self._client.purchases)
 
     @cached_property
     def members(self) -> members.MembersResourceWithRawResponse:
@@ -709,6 +756,12 @@ class SimpleChecksWithRawResponse:
         from .resources.locations import LocationsResourceWithRawResponse
 
         return LocationsResourceWithRawResponse(self._client.locations)
+
+    @cached_property
+    def pricing(self) -> pricing.PricingResourceWithRawResponse:
+        from .resources.pricing import PricingResourceWithRawResponse
+
+        return PricingResourceWithRawResponse(self._client.pricing)
 
 
 class AsyncSimpleChecksWithRawResponse:
@@ -754,17 +807,24 @@ class AsyncSimpleChecksWithRawResponse:
 
     @cached_property
     def balance(self) -> balance.AsyncBalanceResourceWithRawResponse:
-        """Run-credit balance + Stripe Checkout for top-ups."""
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
         from .resources.balance import AsyncBalanceResourceWithRawResponse
 
         return AsyncBalanceResourceWithRawResponse(self._client.balance)
 
     @cached_property
     def checkout_sessions(self) -> checkout_sessions.AsyncCheckoutSessionsResourceWithRawResponse:
-        """Run-credit balance + Stripe Checkout for top-ups."""
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
         from .resources.checkout_sessions import AsyncCheckoutSessionsResourceWithRawResponse
 
         return AsyncCheckoutSessionsResourceWithRawResponse(self._client.checkout_sessions)
+
+    @cached_property
+    def purchases(self) -> purchases.AsyncPurchasesResourceWithRawResponse:
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
+        from .resources.purchases import AsyncPurchasesResourceWithRawResponse
+
+        return AsyncPurchasesResourceWithRawResponse(self._client.purchases)
 
     @cached_property
     def members(self) -> members.AsyncMembersResourceWithRawResponse:
@@ -789,6 +849,12 @@ class AsyncSimpleChecksWithRawResponse:
         from .resources.locations import AsyncLocationsResourceWithRawResponse
 
         return AsyncLocationsResourceWithRawResponse(self._client.locations)
+
+    @cached_property
+    def pricing(self) -> pricing.AsyncPricingResourceWithRawResponse:
+        from .resources.pricing import AsyncPricingResourceWithRawResponse
+
+        return AsyncPricingResourceWithRawResponse(self._client.pricing)
 
 
 class SimpleChecksWithStreamedResponse:
@@ -834,17 +900,24 @@ class SimpleChecksWithStreamedResponse:
 
     @cached_property
     def balance(self) -> balance.BalanceResourceWithStreamingResponse:
-        """Run-credit balance + Stripe Checkout for top-ups."""
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
         from .resources.balance import BalanceResourceWithStreamingResponse
 
         return BalanceResourceWithStreamingResponse(self._client.balance)
 
     @cached_property
     def checkout_sessions(self) -> checkout_sessions.CheckoutSessionsResourceWithStreamingResponse:
-        """Run-credit balance + Stripe Checkout for top-ups."""
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
         from .resources.checkout_sessions import CheckoutSessionsResourceWithStreamingResponse
 
         return CheckoutSessionsResourceWithStreamingResponse(self._client.checkout_sessions)
+
+    @cached_property
+    def purchases(self) -> purchases.PurchasesResourceWithStreamingResponse:
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
+        from .resources.purchases import PurchasesResourceWithStreamingResponse
+
+        return PurchasesResourceWithStreamingResponse(self._client.purchases)
 
     @cached_property
     def members(self) -> members.MembersResourceWithStreamingResponse:
@@ -869,6 +942,12 @@ class SimpleChecksWithStreamedResponse:
         from .resources.locations import LocationsResourceWithStreamingResponse
 
         return LocationsResourceWithStreamingResponse(self._client.locations)
+
+    @cached_property
+    def pricing(self) -> pricing.PricingResourceWithStreamingResponse:
+        from .resources.pricing import PricingResourceWithStreamingResponse
+
+        return PricingResourceWithStreamingResponse(self._client.pricing)
 
 
 class AsyncSimpleChecksWithStreamedResponse:
@@ -914,17 +993,24 @@ class AsyncSimpleChecksWithStreamedResponse:
 
     @cached_property
     def balance(self) -> balance.AsyncBalanceResourceWithStreamingResponse:
-        """Run-credit balance + Stripe Checkout for top-ups."""
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
         from .resources.balance import AsyncBalanceResourceWithStreamingResponse
 
         return AsyncBalanceResourceWithStreamingResponse(self._client.balance)
 
     @cached_property
     def checkout_sessions(self) -> checkout_sessions.AsyncCheckoutSessionsResourceWithStreamingResponse:
-        """Run-credit balance + Stripe Checkout for top-ups."""
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
         from .resources.checkout_sessions import AsyncCheckoutSessionsResourceWithStreamingResponse
 
         return AsyncCheckoutSessionsResourceWithStreamingResponse(self._client.checkout_sessions)
+
+    @cached_property
+    def purchases(self) -> purchases.AsyncPurchasesResourceWithStreamingResponse:
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
+        from .resources.purchases import AsyncPurchasesResourceWithStreamingResponse
+
+        return AsyncPurchasesResourceWithStreamingResponse(self._client.purchases)
 
     @cached_property
     def members(self) -> members.AsyncMembersResourceWithStreamingResponse:
@@ -949,6 +1035,12 @@ class AsyncSimpleChecksWithStreamedResponse:
         from .resources.locations import AsyncLocationsResourceWithStreamingResponse
 
         return AsyncLocationsResourceWithStreamingResponse(self._client.locations)
+
+    @cached_property
+    def pricing(self) -> pricing.AsyncPricingResourceWithStreamingResponse:
+        from .resources.pricing import AsyncPricingResourceWithStreamingResponse
+
+        return AsyncPricingResourceWithStreamingResponse(self._client.pricing)
 
 
 Client = SimpleChecks
