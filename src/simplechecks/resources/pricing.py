@@ -20,6 +20,11 @@ __all__ = ["PricingResource", "AsyncPricingResource"]
 
 
 class PricingResource(SyncAPIResource):
+    """
+    Active token-pricing table: per-check-type weights and the
+    customer-facing provider cost multipliers. Reads are free.
+    """
+
     @cached_property
     def with_raw_response(self) -> PricingResourceWithRawResponse:
         """
@@ -73,6 +78,11 @@ class PricingResource(SyncAPIResource):
 
 
 class AsyncPricingResource(AsyncAPIResource):
+    """
+    Active token-pricing table: per-check-type weights and the
+    customer-facing provider cost multipliers. Reads are free.
+    """
+
     @cached_property
     def with_raw_response(self) -> AsyncPricingResourceWithRawResponse:
         """

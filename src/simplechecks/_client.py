@@ -245,6 +245,10 @@ class SimpleChecks(SyncAPIClient):
 
     @cached_property
     def pricing(self) -> PricingResource:
+        """
+        Active token-pricing table: per-check-type weights and the
+        customer-facing provider cost multipliers. Reads are free.
+        """
         from .resources.pricing import PricingResource
 
         return PricingResource(self)
@@ -541,6 +545,10 @@ class AsyncSimpleChecks(AsyncAPIClient):
 
     @cached_property
     def pricing(self) -> AsyncPricingResource:
+        """
+        Active token-pricing table: per-check-type weights and the
+        customer-facing provider cost multipliers. Reads are free.
+        """
         from .resources.pricing import AsyncPricingResource
 
         return AsyncPricingResource(self)
@@ -759,6 +767,10 @@ class SimpleChecksWithRawResponse:
 
     @cached_property
     def pricing(self) -> pricing.PricingResourceWithRawResponse:
+        """
+        Active token-pricing table: per-check-type weights and the
+        customer-facing provider cost multipliers. Reads are free.
+        """
         from .resources.pricing import PricingResourceWithRawResponse
 
         return PricingResourceWithRawResponse(self._client.pricing)
@@ -852,6 +864,10 @@ class AsyncSimpleChecksWithRawResponse:
 
     @cached_property
     def pricing(self) -> pricing.AsyncPricingResourceWithRawResponse:
+        """
+        Active token-pricing table: per-check-type weights and the
+        customer-facing provider cost multipliers. Reads are free.
+        """
         from .resources.pricing import AsyncPricingResourceWithRawResponse
 
         return AsyncPricingResourceWithRawResponse(self._client.pricing)
@@ -945,6 +961,10 @@ class SimpleChecksWithStreamedResponse:
 
     @cached_property
     def pricing(self) -> pricing.PricingResourceWithStreamingResponse:
+        """
+        Active token-pricing table: per-check-type weights and the
+        customer-facing provider cost multipliers. Reads are free.
+        """
         from .resources.pricing import PricingResourceWithStreamingResponse
 
         return PricingResourceWithStreamingResponse(self._client.pricing)
@@ -1038,6 +1058,10 @@ class AsyncSimpleChecksWithStreamedResponse:
 
     @cached_property
     def pricing(self) -> pricing.AsyncPricingResourceWithStreamingResponse:
+        """
+        Active token-pricing table: per-check-type weights and the
+        customer-facing provider cost multipliers. Reads are free.
+        """
         from .resources.pricing import AsyncPricingResourceWithStreamingResponse
 
         return AsyncPricingResourceWithStreamingResponse(self._client.pricing)
