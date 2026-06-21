@@ -5,7 +5,7 @@ from typing_extensions import override
 
 from ._base_client import BasePage, PageInfo, BaseSyncPage, BaseAsyncPage
 
-__all__ = ["SyncOffset", "AsyncOffset"]
+__all__ = ["SyncOffset", "AsyncOffset", "SyncRunsCursor", "AsyncRunsCursor"]
 
 _T = TypeVar("_T")
 
@@ -54,3 +54,43 @@ class AsyncOffset(BaseAsyncPage[_T], BasePage[_T], Generic[_T]):
         current_count = offset + length
 
         return PageInfo(params={"offset": current_count})
+
+
+class SyncRunsCursor(BaseSyncPage[_T], BasePage[_T], Generic[_T]):
+    runs: List[_T]
+    next_cursor: Optional[str] = None
+
+    @override
+    def _get_page_items(self) -> List[_T]:
+        runs = self.runs
+        if not runs:
+            return []
+        return runs
+
+    @override
+    def next_page_info(self) -> Optional[PageInfo]:
+        next_cursor = self.next_cursor
+        if not next_cursor:
+            return None
+
+        return PageInfo(params={"cursor": next_cursor})
+
+
+class AsyncRunsCursor(BaseAsyncPage[_T], BasePage[_T], Generic[_T]):
+    runs: List[_T]
+    next_cursor: Optional[str] = None
+
+    @override
+    def _get_page_items(self) -> List[_T]:
+        runs = self.runs
+        if not runs:
+            return []
+        return runs
+
+    @override
+    def next_page_info(self) -> Optional[PageInfo]:
+        next_cursor = self.next_cursor
+        if not next_cursor:
+            return None
+
+        return PageInfo(params={"cursor": next_cursor})
