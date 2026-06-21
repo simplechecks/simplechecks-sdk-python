@@ -11,12 +11,20 @@ class RunListParams(TypedDict, total=False):
     check_id: str
     """Filter to a single check (UUID; matches `Check.id`)."""
 
-    limit: int
+    cursor: str
+    """Opaque pagination token from the previous page's `next_cursor`."""
 
-    offset: int
+    limit: int
+    """Page size; defaults to 50, max 200."""
+
+    location: str
+    """Filter to a single provider-native region id (e.g. `fsn1`)."""
 
     since: int
-    """Lower bound on `started_at_unix_ms`. Server clamps to a 7-day window."""
+    """Lower bound on `started_at_unix_ms` (inclusive)."""
 
     status: Literal["PASS", "FAIL", "ERROR", "TIMEOUT"]
     """Filter to a single execution status."""
+
+    until: int
+    """Upper bound on `started_at_unix_ms` (inclusive)."""
