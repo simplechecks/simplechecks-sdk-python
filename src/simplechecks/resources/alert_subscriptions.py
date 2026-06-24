@@ -2,102 +2,80 @@
 
 from __future__ import annotations
 
-from typing import Dict
-
 import httpx
 
-from .alerts import (
-    AlertsResource,
-    AsyncAlertsResource,
-    AlertsResourceWithRawResponse,
-    AsyncAlertsResourceWithRawResponse,
-    AlertsResourceWithStreamingResponse,
-    AsyncAlertsResourceWithStreamingResponse,
-)
-from ...types import check_list_params, check_create_params, check_update_params
-from ..._types import Body, Omit, Query, Headers, NoneType, NotGiven, SequenceNotStr, omit, not_given
-from ..._utils import path_template, maybe_transform, async_maybe_transform
-from ..._compat import cached_property
-from ..._resource import SyncAPIResource, AsyncAPIResource
-from ..._response import (
+from ..types import alert_subscription_list_params, alert_subscription_create_params, alert_subscription_update_params
+from .._types import Body, Omit, Query, Headers, NoneType, NotGiven, omit, not_given
+from .._utils import path_template, maybe_transform, async_maybe_transform
+from .._compat import cached_property
+from .._resource import SyncAPIResource, AsyncAPIResource
+from .._response import (
     to_raw_response_wrapper,
     to_streamed_response_wrapper,
     async_to_raw_response_wrapper,
     async_to_streamed_response_wrapper,
 )
-from ...pagination import SyncOffset, AsyncOffset
-from ...types.check import Check
-from ..._base_client import AsyncPaginator, make_request_options
+from ..pagination import SyncAlertSubscriptionsCursor, AsyncAlertSubscriptionsCursor
+from .._base_client import AsyncPaginator, make_request_options
+from ..types.alert_subscription import AlertSubscription
 
-__all__ = ["ChecksResource", "AsyncChecksResource"]
+__all__ = ["AlertSubscriptionsResource", "AsyncAlertSubscriptionsResource"]
 
 
-class ChecksResource(SyncAPIResource):
-    """CRUD for synthetic-monitoring checks."""
-
-    @cached_property
-    def alerts(self) -> AlertsResource:
-        """
-        Per-check alert settings: consecutive-failure threshold and the
-        M-of-N consensus parameters. Notification destinations are
-        reusable account-scoped resources under `alert-channels`, bound to
-        checks via `alert-subscriptions`.
-        """
-        return AlertsResource(self._client)
+class AlertSubscriptionsResource(SyncAPIResource):
+    """
+    Bindings of a check to an alert channel, each carrying its own
+    notify-on-failure / notify-on-recovery flags.
+    """
 
     @cached_property
-    def with_raw_response(self) -> ChecksResourceWithRawResponse:
+    def with_raw_response(self) -> AlertSubscriptionsResourceWithRawResponse:
         """
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
         For more information, see https://www.github.com/simplechecks/simplechecks-sdk-python#accessing-raw-response-data-eg-headers
         """
-        return ChecksResourceWithRawResponse(self)
+        return AlertSubscriptionsResourceWithRawResponse(self)
 
     @cached_property
-    def with_streaming_response(self) -> ChecksResourceWithStreamingResponse:
+    def with_streaming_response(self) -> AlertSubscriptionsResourceWithStreamingResponse:
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
         For more information, see https://www.github.com/simplechecks/simplechecks-sdk-python#with_streaming_response
         """
-        return ChecksResourceWithStreamingResponse(self)
+        return AlertSubscriptionsResourceWithStreamingResponse(self)
 
     def create(
         self,
         *,
-        enabled: bool,
-        name: str,
-        schedule: str,
-        target_url: str,
-        type: str,
-        artifact_url: str | Omit = omit,
-        config: Dict[str, object] | Omit = omit,
-        location: str | Omit = omit,
-        locations: SequenceNotStr[str] | Omit = omit,
-        provider: str | Omit = omit,
-        timeout_ms: int | Omit = omit,
+        channel_id: str,
+        check_id: str,
+        notify_on_failure: bool | Omit = omit,
+        notify_on_recovery: bool | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> Check:
+    ) -> AlertSubscription:
         """
-        Creates a check bound to the resolved garrison for the given `provider` +
-        `location`. Requires the `checks:write` scope.
+        Binds a check to a channel and carries the per-binding notify flags
+        (`notify_on_failure`, `notify_on_recovery`, both default true). The binding is
+        account-scoped: a check or channel that isn't yours yields 404. A duplicate
+        `(check_id, channel_id)` binding yields 409. Requires the `alerts:write` scope
+        (owner/admin only).
 
         Args:
-          location: Legacy; see `provider`.
+          channel_id: The channel to bind in `chan_<typeid>` form (must belong to your account).
 
-          locations: Preferred: array of wire-form ids (`aws:us-east-1`). Element 0 is the
-              deterministic primary. Each entry must be in the deployment catalog returned by
-              `GET /v1/locations`.
+          check_id: The check to subscribe (must belong to your account).
 
-          provider: Legacy single-location shape. Translated server-side to
-              `locations=[<provider>:<location>]`. Kept for one release cycle.
+          notify_on_failure: Defaults to true when omitted.
+
+          notify_on_recovery: Defaults to true when omitted.
 
           extra_headers: Send extra headers
 
@@ -108,27 +86,20 @@ class ChecksResource(SyncAPIResource):
           timeout: Override the client-level default timeout for this request, in seconds
         """
         return self._post(
-            "/v1/checks",
+            "/v1/alert-subscriptions",
             body=maybe_transform(
                 {
-                    "enabled": enabled,
-                    "name": name,
-                    "schedule": schedule,
-                    "target_url": target_url,
-                    "type": type,
-                    "artifact_url": artifact_url,
-                    "config": config,
-                    "location": location,
-                    "locations": locations,
-                    "provider": provider,
-                    "timeout_ms": timeout_ms,
+                    "channel_id": channel_id,
+                    "check_id": check_id,
+                    "notify_on_failure": notify_on_failure,
+                    "notify_on_recovery": notify_on_recovery,
                 },
-                check_create_params.CheckCreateParams,
+                alert_subscription_create_params.AlertSubscriptionCreateParams,
             ),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=Check,
+            cast_to=AlertSubscription,
         )
 
     def retrieve(
@@ -141,11 +112,11 @@ class ChecksResource(SyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> Check:
-        """Returns the check with the given id.
+    ) -> AlertSubscription:
+        """Returns the subscription.
 
-        404 if no such check exists for the calling
-        account. Requires the `checks:read` scope.
+        404 if no such subscription exists for the calling
+        account. Requires the `alerts:read` scope.
 
         Args:
           extra_headers: Send extra headers
@@ -159,42 +130,32 @@ class ChecksResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._get(
-            path_template("/v1/checks/{id}", id=id),
+            path_template("/v1/alert-subscriptions/{id}", id=id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=Check,
+            cast_to=AlertSubscription,
         )
 
     def update(
         self,
         id: str,
         *,
-        artifact_url: str | Omit = omit,
-        config: Dict[str, object] | Omit = omit,
-        enabled: bool | Omit = omit,
-        locations: SequenceNotStr[str] | Omit = omit,
-        name: str | Omit = omit,
-        schedule: str | Omit = omit,
-        target_url: str | Omit = omit,
-        timeout_ms: int | Omit = omit,
-        type: str | Omit = omit,
+        notify_on_failure: bool | Omit = omit,
+        notify_on_recovery: bool | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> Check:
-        """All fields in the body are optional; omitted fields are left unchanged.
-
-        Requires
-        the `checks:write` scope.
+    ) -> AlertSubscription:
+        """
+        Updates only the notify flags (`notify_on_failure`, `notify_on_recovery`); the
+        check and channel bindings are immutable. Omitted flags are unchanged. Requires
+        the `alerts:write` scope (owner/admin only).
 
         Args:
-          locations: Replace the location set. nil-array = leave unchanged. Each entry must be in the
-              deployment catalog (`GET /v1/locations`).
-
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -206,49 +167,46 @@ class ChecksResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._patch(
-            path_template("/v1/checks/{id}", id=id),
+            path_template("/v1/alert-subscriptions/{id}", id=id),
             body=maybe_transform(
                 {
-                    "artifact_url": artifact_url,
-                    "config": config,
-                    "enabled": enabled,
-                    "locations": locations,
-                    "name": name,
-                    "schedule": schedule,
-                    "target_url": target_url,
-                    "timeout_ms": timeout_ms,
-                    "type": type,
+                    "notify_on_failure": notify_on_failure,
+                    "notify_on_recovery": notify_on_recovery,
                 },
-                check_update_params.CheckUpdateParams,
+                alert_subscription_update_params.AlertSubscriptionUpdateParams,
             ),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=Check,
+            cast_to=AlertSubscription,
         )
 
     def list(
         self,
         *,
+        channel_id: str | Omit = omit,
+        check_id: str | Omit = omit,
+        cursor: str | Omit = omit,
         limit: int | Omit = omit,
-        offset: int | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> SyncOffset[Check]:
-        """Returns the caller's checks with simple offset pagination.
-
-        `next_offset` is set
-        when a full page was returned and zero when there's no more data. Requires the
-        `checks:read` scope.
+    ) -> SyncAlertSubscriptionsCursor[AlertSubscription]:
+        """
+        Returns the caller's check↔channel subscriptions with cursor pagination.
+        Optionally filter by `check_id` and/or `channel_id`. `next_cursor` is set when a
+        full page was returned and null on the final page. Requires the `alerts:read`
+        scope.
 
         Args:
-          limit: Max number of checks to return. Defaults to 100; the server caps further.
+          channel_id: Filter to subscriptions for this channel (`chan_<typeid>`).
 
-          offset: Number of checks to skip. Pass the `next_offset` from the previous page.
+          check_id: Filter to subscriptions for this check (raw check UUID).
+
+          cursor: Opaque pagination token from the previous page's `next_cursor`.
 
           extra_headers: Send extra headers
 
@@ -259,8 +217,8 @@ class ChecksResource(SyncAPIResource):
           timeout: Override the client-level default timeout for this request, in seconds
         """
         return self._get_api_list(
-            "/v1/checks",
-            page=SyncOffset[Check],
+            "/v1/alert-subscriptions",
+            page=SyncAlertSubscriptionsCursor[AlertSubscription],
             options=make_request_options(
                 extra_headers=extra_headers,
                 extra_query=extra_query,
@@ -268,13 +226,15 @@ class ChecksResource(SyncAPIResource):
                 timeout=timeout,
                 query=maybe_transform(
                     {
+                        "channel_id": channel_id,
+                        "check_id": check_id,
+                        "cursor": cursor,
                         "limit": limit,
-                        "offset": offset,
                     },
-                    check_list_params.CheckListParams,
+                    alert_subscription_list_params.AlertSubscriptionListParams,
                 ),
             ),
-            model=Check,
+            model=AlertSubscription,
         )
 
     def delete(
@@ -288,9 +248,10 @@ class ChecksResource(SyncAPIResource):
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> None:
-        """Disables the check.
+        """Removes the binding; the check stops notifying that channel.
 
-        Requires the `checks:write` scope.
+        Requires the
+        `alerts:write` scope (owner/admin only).
 
         Args:
           extra_headers: Send extra headers
@@ -305,7 +266,7 @@ class ChecksResource(SyncAPIResource):
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         extra_headers = {"Accept": "*/*", **(extra_headers or {})}
         return self._delete(
-            path_template("/v1/checks/{id}", id=id),
+            path_template("/v1/alert-subscriptions/{id}", id=id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -313,72 +274,60 @@ class ChecksResource(SyncAPIResource):
         )
 
 
-class AsyncChecksResource(AsyncAPIResource):
-    """CRUD for synthetic-monitoring checks."""
+class AsyncAlertSubscriptionsResource(AsyncAPIResource):
+    """
+    Bindings of a check to an alert channel, each carrying its own
+    notify-on-failure / notify-on-recovery flags.
+    """
 
     @cached_property
-    def alerts(self) -> AsyncAlertsResource:
-        """
-        Per-check alert settings: consecutive-failure threshold and the
-        M-of-N consensus parameters. Notification destinations are
-        reusable account-scoped resources under `alert-channels`, bound to
-        checks via `alert-subscriptions`.
-        """
-        return AsyncAlertsResource(self._client)
-
-    @cached_property
-    def with_raw_response(self) -> AsyncChecksResourceWithRawResponse:
+    def with_raw_response(self) -> AsyncAlertSubscriptionsResourceWithRawResponse:
         """
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
         For more information, see https://www.github.com/simplechecks/simplechecks-sdk-python#accessing-raw-response-data-eg-headers
         """
-        return AsyncChecksResourceWithRawResponse(self)
+        return AsyncAlertSubscriptionsResourceWithRawResponse(self)
 
     @cached_property
-    def with_streaming_response(self) -> AsyncChecksResourceWithStreamingResponse:
+    def with_streaming_response(self) -> AsyncAlertSubscriptionsResourceWithStreamingResponse:
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
         For more information, see https://www.github.com/simplechecks/simplechecks-sdk-python#with_streaming_response
         """
-        return AsyncChecksResourceWithStreamingResponse(self)
+        return AsyncAlertSubscriptionsResourceWithStreamingResponse(self)
 
     async def create(
         self,
         *,
-        enabled: bool,
-        name: str,
-        schedule: str,
-        target_url: str,
-        type: str,
-        artifact_url: str | Omit = omit,
-        config: Dict[str, object] | Omit = omit,
-        location: str | Omit = omit,
-        locations: SequenceNotStr[str] | Omit = omit,
-        provider: str | Omit = omit,
-        timeout_ms: int | Omit = omit,
+        channel_id: str,
+        check_id: str,
+        notify_on_failure: bool | Omit = omit,
+        notify_on_recovery: bool | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> Check:
+    ) -> AlertSubscription:
         """
-        Creates a check bound to the resolved garrison for the given `provider` +
-        `location`. Requires the `checks:write` scope.
+        Binds a check to a channel and carries the per-binding notify flags
+        (`notify_on_failure`, `notify_on_recovery`, both default true). The binding is
+        account-scoped: a check or channel that isn't yours yields 404. A duplicate
+        `(check_id, channel_id)` binding yields 409. Requires the `alerts:write` scope
+        (owner/admin only).
 
         Args:
-          location: Legacy; see `provider`.
+          channel_id: The channel to bind in `chan_<typeid>` form (must belong to your account).
 
-          locations: Preferred: array of wire-form ids (`aws:us-east-1`). Element 0 is the
-              deterministic primary. Each entry must be in the deployment catalog returned by
-              `GET /v1/locations`.
+          check_id: The check to subscribe (must belong to your account).
 
-          provider: Legacy single-location shape. Translated server-side to
-              `locations=[<provider>:<location>]`. Kept for one release cycle.
+          notify_on_failure: Defaults to true when omitted.
+
+          notify_on_recovery: Defaults to true when omitted.
 
           extra_headers: Send extra headers
 
@@ -389,27 +338,20 @@ class AsyncChecksResource(AsyncAPIResource):
           timeout: Override the client-level default timeout for this request, in seconds
         """
         return await self._post(
-            "/v1/checks",
+            "/v1/alert-subscriptions",
             body=await async_maybe_transform(
                 {
-                    "enabled": enabled,
-                    "name": name,
-                    "schedule": schedule,
-                    "target_url": target_url,
-                    "type": type,
-                    "artifact_url": artifact_url,
-                    "config": config,
-                    "location": location,
-                    "locations": locations,
-                    "provider": provider,
-                    "timeout_ms": timeout_ms,
+                    "channel_id": channel_id,
+                    "check_id": check_id,
+                    "notify_on_failure": notify_on_failure,
+                    "notify_on_recovery": notify_on_recovery,
                 },
-                check_create_params.CheckCreateParams,
+                alert_subscription_create_params.AlertSubscriptionCreateParams,
             ),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=Check,
+            cast_to=AlertSubscription,
         )
 
     async def retrieve(
@@ -422,11 +364,11 @@ class AsyncChecksResource(AsyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> Check:
-        """Returns the check with the given id.
+    ) -> AlertSubscription:
+        """Returns the subscription.
 
-        404 if no such check exists for the calling
-        account. Requires the `checks:read` scope.
+        404 if no such subscription exists for the calling
+        account. Requires the `alerts:read` scope.
 
         Args:
           extra_headers: Send extra headers
@@ -440,42 +382,32 @@ class AsyncChecksResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._get(
-            path_template("/v1/checks/{id}", id=id),
+            path_template("/v1/alert-subscriptions/{id}", id=id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=Check,
+            cast_to=AlertSubscription,
         )
 
     async def update(
         self,
         id: str,
         *,
-        artifact_url: str | Omit = omit,
-        config: Dict[str, object] | Omit = omit,
-        enabled: bool | Omit = omit,
-        locations: SequenceNotStr[str] | Omit = omit,
-        name: str | Omit = omit,
-        schedule: str | Omit = omit,
-        target_url: str | Omit = omit,
-        timeout_ms: int | Omit = omit,
-        type: str | Omit = omit,
+        notify_on_failure: bool | Omit = omit,
+        notify_on_recovery: bool | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> Check:
-        """All fields in the body are optional; omitted fields are left unchanged.
-
-        Requires
-        the `checks:write` scope.
+    ) -> AlertSubscription:
+        """
+        Updates only the notify flags (`notify_on_failure`, `notify_on_recovery`); the
+        check and channel bindings are immutable. Omitted flags are unchanged. Requires
+        the `alerts:write` scope (owner/admin only).
 
         Args:
-          locations: Replace the location set. nil-array = leave unchanged. Each entry must be in the
-              deployment catalog (`GET /v1/locations`).
-
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -487,49 +419,46 @@ class AsyncChecksResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._patch(
-            path_template("/v1/checks/{id}", id=id),
+            path_template("/v1/alert-subscriptions/{id}", id=id),
             body=await async_maybe_transform(
                 {
-                    "artifact_url": artifact_url,
-                    "config": config,
-                    "enabled": enabled,
-                    "locations": locations,
-                    "name": name,
-                    "schedule": schedule,
-                    "target_url": target_url,
-                    "timeout_ms": timeout_ms,
-                    "type": type,
+                    "notify_on_failure": notify_on_failure,
+                    "notify_on_recovery": notify_on_recovery,
                 },
-                check_update_params.CheckUpdateParams,
+                alert_subscription_update_params.AlertSubscriptionUpdateParams,
             ),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=Check,
+            cast_to=AlertSubscription,
         )
 
     def list(
         self,
         *,
+        channel_id: str | Omit = omit,
+        check_id: str | Omit = omit,
+        cursor: str | Omit = omit,
         limit: int | Omit = omit,
-        offset: int | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> AsyncPaginator[Check, AsyncOffset[Check]]:
-        """Returns the caller's checks with simple offset pagination.
-
-        `next_offset` is set
-        when a full page was returned and zero when there's no more data. Requires the
-        `checks:read` scope.
+    ) -> AsyncPaginator[AlertSubscription, AsyncAlertSubscriptionsCursor[AlertSubscription]]:
+        """
+        Returns the caller's check↔channel subscriptions with cursor pagination.
+        Optionally filter by `check_id` and/or `channel_id`. `next_cursor` is set when a
+        full page was returned and null on the final page. Requires the `alerts:read`
+        scope.
 
         Args:
-          limit: Max number of checks to return. Defaults to 100; the server caps further.
+          channel_id: Filter to subscriptions for this channel (`chan_<typeid>`).
 
-          offset: Number of checks to skip. Pass the `next_offset` from the previous page.
+          check_id: Filter to subscriptions for this check (raw check UUID).
+
+          cursor: Opaque pagination token from the previous page's `next_cursor`.
 
           extra_headers: Send extra headers
 
@@ -540,8 +469,8 @@ class AsyncChecksResource(AsyncAPIResource):
           timeout: Override the client-level default timeout for this request, in seconds
         """
         return self._get_api_list(
-            "/v1/checks",
-            page=AsyncOffset[Check],
+            "/v1/alert-subscriptions",
+            page=AsyncAlertSubscriptionsCursor[AlertSubscription],
             options=make_request_options(
                 extra_headers=extra_headers,
                 extra_query=extra_query,
@@ -549,13 +478,15 @@ class AsyncChecksResource(AsyncAPIResource):
                 timeout=timeout,
                 query=maybe_transform(
                     {
+                        "channel_id": channel_id,
+                        "check_id": check_id,
+                        "cursor": cursor,
                         "limit": limit,
-                        "offset": offset,
                     },
-                    check_list_params.CheckListParams,
+                    alert_subscription_list_params.AlertSubscriptionListParams,
                 ),
             ),
-            model=Check,
+            model=AlertSubscription,
         )
 
     async def delete(
@@ -569,9 +500,10 @@ class AsyncChecksResource(AsyncAPIResource):
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> None:
-        """Disables the check.
+        """Removes the binding; the check stops notifying that channel.
 
-        Requires the `checks:write` scope.
+        Requires the
+        `alerts:write` scope (owner/admin only).
 
         Args:
           extra_headers: Send extra headers
@@ -586,7 +518,7 @@ class AsyncChecksResource(AsyncAPIResource):
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         extra_headers = {"Accept": "*/*", **(extra_headers or {})}
         return await self._delete(
-            path_template("/v1/checks/{id}", id=id),
+            path_template("/v1/alert-subscriptions/{id}", id=id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -594,125 +526,85 @@ class AsyncChecksResource(AsyncAPIResource):
         )
 
 
-class ChecksResourceWithRawResponse:
-    def __init__(self, checks: ChecksResource) -> None:
-        self._checks = checks
+class AlertSubscriptionsResourceWithRawResponse:
+    def __init__(self, alert_subscriptions: AlertSubscriptionsResource) -> None:
+        self._alert_subscriptions = alert_subscriptions
 
         self.create = to_raw_response_wrapper(
-            checks.create,
+            alert_subscriptions.create,
         )
         self.retrieve = to_raw_response_wrapper(
-            checks.retrieve,
+            alert_subscriptions.retrieve,
         )
         self.update = to_raw_response_wrapper(
-            checks.update,
+            alert_subscriptions.update,
         )
         self.list = to_raw_response_wrapper(
-            checks.list,
+            alert_subscriptions.list,
         )
         self.delete = to_raw_response_wrapper(
-            checks.delete,
+            alert_subscriptions.delete,
         )
 
-    @cached_property
-    def alerts(self) -> AlertsResourceWithRawResponse:
-        """
-        Per-check alert settings: consecutive-failure threshold and the
-        M-of-N consensus parameters. Notification destinations are
-        reusable account-scoped resources under `alert-channels`, bound to
-        checks via `alert-subscriptions`.
-        """
-        return AlertsResourceWithRawResponse(self._checks.alerts)
 
-
-class AsyncChecksResourceWithRawResponse:
-    def __init__(self, checks: AsyncChecksResource) -> None:
-        self._checks = checks
+class AsyncAlertSubscriptionsResourceWithRawResponse:
+    def __init__(self, alert_subscriptions: AsyncAlertSubscriptionsResource) -> None:
+        self._alert_subscriptions = alert_subscriptions
 
         self.create = async_to_raw_response_wrapper(
-            checks.create,
+            alert_subscriptions.create,
         )
         self.retrieve = async_to_raw_response_wrapper(
-            checks.retrieve,
+            alert_subscriptions.retrieve,
         )
         self.update = async_to_raw_response_wrapper(
-            checks.update,
+            alert_subscriptions.update,
         )
         self.list = async_to_raw_response_wrapper(
-            checks.list,
+            alert_subscriptions.list,
         )
         self.delete = async_to_raw_response_wrapper(
-            checks.delete,
+            alert_subscriptions.delete,
         )
 
-    @cached_property
-    def alerts(self) -> AsyncAlertsResourceWithRawResponse:
-        """
-        Per-check alert settings: consecutive-failure threshold and the
-        M-of-N consensus parameters. Notification destinations are
-        reusable account-scoped resources under `alert-channels`, bound to
-        checks via `alert-subscriptions`.
-        """
-        return AsyncAlertsResourceWithRawResponse(self._checks.alerts)
 
-
-class ChecksResourceWithStreamingResponse:
-    def __init__(self, checks: ChecksResource) -> None:
-        self._checks = checks
+class AlertSubscriptionsResourceWithStreamingResponse:
+    def __init__(self, alert_subscriptions: AlertSubscriptionsResource) -> None:
+        self._alert_subscriptions = alert_subscriptions
 
         self.create = to_streamed_response_wrapper(
-            checks.create,
+            alert_subscriptions.create,
         )
         self.retrieve = to_streamed_response_wrapper(
-            checks.retrieve,
+            alert_subscriptions.retrieve,
         )
         self.update = to_streamed_response_wrapper(
-            checks.update,
+            alert_subscriptions.update,
         )
         self.list = to_streamed_response_wrapper(
-            checks.list,
+            alert_subscriptions.list,
         )
         self.delete = to_streamed_response_wrapper(
-            checks.delete,
+            alert_subscriptions.delete,
         )
 
-    @cached_property
-    def alerts(self) -> AlertsResourceWithStreamingResponse:
-        """
-        Per-check alert settings: consecutive-failure threshold and the
-        M-of-N consensus parameters. Notification destinations are
-        reusable account-scoped resources under `alert-channels`, bound to
-        checks via `alert-subscriptions`.
-        """
-        return AlertsResourceWithStreamingResponse(self._checks.alerts)
 
-
-class AsyncChecksResourceWithStreamingResponse:
-    def __init__(self, checks: AsyncChecksResource) -> None:
-        self._checks = checks
+class AsyncAlertSubscriptionsResourceWithStreamingResponse:
+    def __init__(self, alert_subscriptions: AsyncAlertSubscriptionsResource) -> None:
+        self._alert_subscriptions = alert_subscriptions
 
         self.create = async_to_streamed_response_wrapper(
-            checks.create,
+            alert_subscriptions.create,
         )
         self.retrieve = async_to_streamed_response_wrapper(
-            checks.retrieve,
+            alert_subscriptions.retrieve,
         )
         self.update = async_to_streamed_response_wrapper(
-            checks.update,
+            alert_subscriptions.update,
         )
         self.list = async_to_streamed_response_wrapper(
-            checks.list,
+            alert_subscriptions.list,
         )
         self.delete = async_to_streamed_response_wrapper(
-            checks.delete,
+            alert_subscriptions.delete,
         )
-
-    @cached_property
-    def alerts(self) -> AsyncAlertsResourceWithStreamingResponse:
-        """
-        Per-check alert settings: consecutive-failure threshold and the
-        M-of-N consensus parameters. Notification destinations are
-        reusable account-scoped resources under `alert-channels`, bound to
-        checks via `alert-subscriptions`.
-        """
-        return AsyncAlertsResourceWithStreamingResponse(self._checks.alerts)

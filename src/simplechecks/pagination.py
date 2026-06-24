@@ -5,7 +5,18 @@ from typing_extensions import override
 
 from ._base_client import BasePage, PageInfo, BaseSyncPage, BaseAsyncPage
 
-__all__ = ["SyncOffset", "AsyncOffset", "SyncRunsCursor", "AsyncRunsCursor"]
+__all__ = [
+    "SyncOffset",
+    "AsyncOffset",
+    "SyncRunsCursor",
+    "AsyncRunsCursor",
+    "SyncAlertChannelsCursor",
+    "AsyncAlertChannelsCursor",
+    "SyncAlertSubscriptionsCursor",
+    "AsyncAlertSubscriptionsCursor",
+    "SyncMaintenanceWindowsCursor",
+    "AsyncMaintenanceWindowsCursor",
+]
 
 _T = TypeVar("_T")
 
@@ -86,6 +97,126 @@ class AsyncRunsCursor(BaseAsyncPage[_T], BasePage[_T], Generic[_T]):
         if not runs:
             return []
         return runs
+
+    @override
+    def next_page_info(self) -> Optional[PageInfo]:
+        next_cursor = self.next_cursor
+        if not next_cursor:
+            return None
+
+        return PageInfo(params={"cursor": next_cursor})
+
+
+class SyncAlertChannelsCursor(BaseSyncPage[_T], BasePage[_T], Generic[_T]):
+    alert_channels: List[_T]
+    next_cursor: Optional[str] = None
+
+    @override
+    def _get_page_items(self) -> List[_T]:
+        alert_channels = self.alert_channels
+        if not alert_channels:
+            return []
+        return alert_channels
+
+    @override
+    def next_page_info(self) -> Optional[PageInfo]:
+        next_cursor = self.next_cursor
+        if not next_cursor:
+            return None
+
+        return PageInfo(params={"cursor": next_cursor})
+
+
+class AsyncAlertChannelsCursor(BaseAsyncPage[_T], BasePage[_T], Generic[_T]):
+    alert_channels: List[_T]
+    next_cursor: Optional[str] = None
+
+    @override
+    def _get_page_items(self) -> List[_T]:
+        alert_channels = self.alert_channels
+        if not alert_channels:
+            return []
+        return alert_channels
+
+    @override
+    def next_page_info(self) -> Optional[PageInfo]:
+        next_cursor = self.next_cursor
+        if not next_cursor:
+            return None
+
+        return PageInfo(params={"cursor": next_cursor})
+
+
+class SyncAlertSubscriptionsCursor(BaseSyncPage[_T], BasePage[_T], Generic[_T]):
+    alert_subscriptions: List[_T]
+    next_cursor: Optional[str] = None
+
+    @override
+    def _get_page_items(self) -> List[_T]:
+        alert_subscriptions = self.alert_subscriptions
+        if not alert_subscriptions:
+            return []
+        return alert_subscriptions
+
+    @override
+    def next_page_info(self) -> Optional[PageInfo]:
+        next_cursor = self.next_cursor
+        if not next_cursor:
+            return None
+
+        return PageInfo(params={"cursor": next_cursor})
+
+
+class AsyncAlertSubscriptionsCursor(BaseAsyncPage[_T], BasePage[_T], Generic[_T]):
+    alert_subscriptions: List[_T]
+    next_cursor: Optional[str] = None
+
+    @override
+    def _get_page_items(self) -> List[_T]:
+        alert_subscriptions = self.alert_subscriptions
+        if not alert_subscriptions:
+            return []
+        return alert_subscriptions
+
+    @override
+    def next_page_info(self) -> Optional[PageInfo]:
+        next_cursor = self.next_cursor
+        if not next_cursor:
+            return None
+
+        return PageInfo(params={"cursor": next_cursor})
+
+
+class SyncMaintenanceWindowsCursor(BaseSyncPage[_T], BasePage[_T], Generic[_T]):
+    maintenance_windows: List[_T]
+    next_cursor: Optional[str] = None
+
+    @override
+    def _get_page_items(self) -> List[_T]:
+        maintenance_windows = self.maintenance_windows
+        if not maintenance_windows:
+            return []
+        return maintenance_windows
+
+    @override
+    def next_page_info(self) -> Optional[PageInfo]:
+        next_cursor = self.next_cursor
+        if not next_cursor:
+            return None
+
+        return PageInfo(params={"cursor": next_cursor})
+
+
+class AsyncMaintenanceWindowsCursor(BaseAsyncPage[_T], BasePage[_T], Generic[_T]):
+    maintenance_windows: List[_T]
+    next_cursor: Optional[str] = None
+
+    @override
+    def _get_page_items(self) -> List[_T]:
+        maintenance_windows = self.maintenance_windows
+        if not maintenance_windows:
+            return []
+        return maintenance_windows
 
     @override
     def next_page_info(self) -> Optional[PageInfo]:

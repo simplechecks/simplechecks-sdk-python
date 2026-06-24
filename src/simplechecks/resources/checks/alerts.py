@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Iterable
-
 import httpx
 
 from ..._types import Body, Omit, Query, Headers, NoneType, NotGiven, omit, not_given
@@ -19,15 +17,17 @@ from ..._response import (
 from ..._base_client import make_request_options
 from ...types.checks import alert_replace_params
 from ...types.alert_config import AlertConfig
-from ...types.alert_channel_param import AlertChannelParam
-from ...types.maintenance_window_param import MaintenanceWindowParam
-from ...types.checks.alert_test_fire_response import AlertTestFireResponse
 
 __all__ = ["AlertsResource", "AsyncAlertsResource"]
 
 
 class AlertsResource(SyncAPIResource):
-    """Per-check alert configuration + test-fire endpoint (PR-Alerts/1)."""
+    """
+    Per-check alert settings: consecutive-failure threshold and the
+    M-of-N consensus parameters. Notification destinations are
+    reusable account-scoped resources under `alert-channels`, bound to
+    checks via `alert-subscriptions`.
+    """
 
     @cached_property
     def with_raw_response(self) -> AlertsResourceWithRawResponse:
@@ -123,14 +123,12 @@ class AlertsResource(SyncAPIResource):
         self,
         id: str,
         *,
-        channels: Iterable[AlertChannelParam],
         consecutive_failures_threshold: int,
         consensus_m: int,
         consensus_n: int,
         enabled: bool,
         account_id: str | Omit = omit,
         check_id: str | Omit = omit,
-        maintenance_windows: Iterable[MaintenanceWindowParam] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -140,11 +138,12 @@ class AlertsResource(SyncAPIResource):
     ) -> AlertConfig:
         """Idempotent upsert.
 
-        The same body shape is returned by GET. Channels supported:
-        email, slack, discord, teams, webhook, pagerduty, opsgenie. The PR-Alerts/1
-        evaluator runs M-of-N consensus before incident-firing; if fewer than
-        `consensus_m` locations have observations, the rule falls back to "any failing =
-        failing" so brand-new checks don't miss outages.
+        The same body shape is returned by GET. This configures alert
+        _settings_ only (failure threshold + consensus); notification destinations live
+        in `alert-channels`, bound via `alert-subscriptions`. The evaluator runs M-of-N
+        consensus before incident-firing; if fewer than `consensus_m` locations have
+        observations, the rule falls back to "any failing = failing" so brand-new checks
+        don't miss outages.
 
         Eventual-consistency contract: after a config write, the evaluator picks up the
         new thresholds on the next ingest cycle (15s push cadence).
@@ -170,9 +169,6 @@ class AlertsResource(SyncAPIResource):
 
           check_id: Server-set; ignored on write.
 
-          maintenance_windows: Absolute-time windows during which the evaluator suppresses dispatch but still
-              updates state. Cron-style recurring windows are a future enhancement.
-
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -187,14 +183,12 @@ class AlertsResource(SyncAPIResource):
             path_template("/v1/checks/{id}/alerts", id=id),
             body=maybe_transform(
                 {
-                    "channels": channels,
                     "consecutive_failures_threshold": consecutive_failures_threshold,
                     "consensus_m": consensus_m,
                     "consensus_n": consensus_n,
                     "enabled": enabled,
                     "account_id": account_id,
                     "check_id": check_id,
-                    "maintenance_windows": maintenance_windows,
                 },
                 alert_replace_params.AlertReplaceParams,
             ),
@@ -204,46 +198,14 @@ class AlertsResource(SyncAPIResource):
             cast_to=AlertConfig,
         )
 
-    def test_fire(
-        self,
-        id: str,
-        *,
-        # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
-        # The extra values given here take precedence over values defined on the client or passed to this method.
-        extra_headers: Headers | None = None,
-        extra_query: Query | None = None,
-        extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> AlertTestFireResponse:
-        """
-        Synthesizes a `test_fire` dispatch per channel and enqueues them for the async
-        dispatcher. Useful for verifying that a Slack webhook URL or PagerDuty
-        integration key actually works without waiting for a real failure. The test
-        dispatches do not affect alert state or incident lifecycle. Requires the
-        `checks:write` scope.
-
-        Args:
-          extra_headers: Send extra headers
-
-          extra_query: Add additional query parameters to the request
-
-          extra_body: Add additional JSON properties to the request
-
-          timeout: Override the client-level default timeout for this request, in seconds
-        """
-        if not id:
-            raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
-        return self._post(
-            path_template("/v1/checks/{id}/alerts:test", id=id),
-            options=make_request_options(
-                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
-            ),
-            cast_to=AlertTestFireResponse,
-        )
-
 
 class AsyncAlertsResource(AsyncAPIResource):
-    """Per-check alert configuration + test-fire endpoint (PR-Alerts/1)."""
+    """
+    Per-check alert settings: consecutive-failure threshold and the
+    M-of-N consensus parameters. Notification destinations are
+    reusable account-scoped resources under `alert-channels`, bound to
+    checks via `alert-subscriptions`.
+    """
 
     @cached_property
     def with_raw_response(self) -> AsyncAlertsResourceWithRawResponse:
@@ -339,14 +301,12 @@ class AsyncAlertsResource(AsyncAPIResource):
         self,
         id: str,
         *,
-        channels: Iterable[AlertChannelParam],
         consecutive_failures_threshold: int,
         consensus_m: int,
         consensus_n: int,
         enabled: bool,
         account_id: str | Omit = omit,
         check_id: str | Omit = omit,
-        maintenance_windows: Iterable[MaintenanceWindowParam] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -356,11 +316,12 @@ class AsyncAlertsResource(AsyncAPIResource):
     ) -> AlertConfig:
         """Idempotent upsert.
 
-        The same body shape is returned by GET. Channels supported:
-        email, slack, discord, teams, webhook, pagerduty, opsgenie. The PR-Alerts/1
-        evaluator runs M-of-N consensus before incident-firing; if fewer than
-        `consensus_m` locations have observations, the rule falls back to "any failing =
-        failing" so brand-new checks don't miss outages.
+        The same body shape is returned by GET. This configures alert
+        _settings_ only (failure threshold + consensus); notification destinations live
+        in `alert-channels`, bound via `alert-subscriptions`. The evaluator runs M-of-N
+        consensus before incident-firing; if fewer than `consensus_m` locations have
+        observations, the rule falls back to "any failing = failing" so brand-new checks
+        don't miss outages.
 
         Eventual-consistency contract: after a config write, the evaluator picks up the
         new thresholds on the next ingest cycle (15s push cadence).
@@ -386,9 +347,6 @@ class AsyncAlertsResource(AsyncAPIResource):
 
           check_id: Server-set; ignored on write.
 
-          maintenance_windows: Absolute-time windows during which the evaluator suppresses dispatch but still
-              updates state. Cron-style recurring windows are a future enhancement.
-
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -403,14 +361,12 @@ class AsyncAlertsResource(AsyncAPIResource):
             path_template("/v1/checks/{id}/alerts", id=id),
             body=await async_maybe_transform(
                 {
-                    "channels": channels,
                     "consecutive_failures_threshold": consecutive_failures_threshold,
                     "consensus_m": consensus_m,
                     "consensus_n": consensus_n,
                     "enabled": enabled,
                     "account_id": account_id,
                     "check_id": check_id,
-                    "maintenance_windows": maintenance_windows,
                 },
                 alert_replace_params.AlertReplaceParams,
             ),
@@ -418,43 +374,6 @@ class AsyncAlertsResource(AsyncAPIResource):
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
             cast_to=AlertConfig,
-        )
-
-    async def test_fire(
-        self,
-        id: str,
-        *,
-        # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
-        # The extra values given here take precedence over values defined on the client or passed to this method.
-        extra_headers: Headers | None = None,
-        extra_query: Query | None = None,
-        extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> AlertTestFireResponse:
-        """
-        Synthesizes a `test_fire` dispatch per channel and enqueues them for the async
-        dispatcher. Useful for verifying that a Slack webhook URL or PagerDuty
-        integration key actually works without waiting for a real failure. The test
-        dispatches do not affect alert state or incident lifecycle. Requires the
-        `checks:write` scope.
-
-        Args:
-          extra_headers: Send extra headers
-
-          extra_query: Add additional query parameters to the request
-
-          extra_body: Add additional JSON properties to the request
-
-          timeout: Override the client-level default timeout for this request, in seconds
-        """
-        if not id:
-            raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
-        return await self._post(
-            path_template("/v1/checks/{id}/alerts:test", id=id),
-            options=make_request_options(
-                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
-            ),
-            cast_to=AlertTestFireResponse,
         )
 
 
@@ -471,9 +390,6 @@ class AlertsResourceWithRawResponse:
         self.replace = to_raw_response_wrapper(
             alerts.replace,
         )
-        self.test_fire = to_raw_response_wrapper(
-            alerts.test_fire,
-        )
 
 
 class AsyncAlertsResourceWithRawResponse:
@@ -488,9 +404,6 @@ class AsyncAlertsResourceWithRawResponse:
         )
         self.replace = async_to_raw_response_wrapper(
             alerts.replace,
-        )
-        self.test_fire = async_to_raw_response_wrapper(
-            alerts.test_fire,
         )
 
 
@@ -507,9 +420,6 @@ class AlertsResourceWithStreamingResponse:
         self.replace = to_streamed_response_wrapper(
             alerts.replace,
         )
-        self.test_fire = to_streamed_response_wrapper(
-            alerts.test_fire,
-        )
 
 
 class AsyncAlertsResourceWithStreamingResponse:
@@ -524,7 +434,4 @@ class AsyncAlertsResourceWithStreamingResponse:
         )
         self.replace = async_to_streamed_response_wrapper(
             alerts.replace,
-        )
-        self.test_fire = async_to_streamed_response_wrapper(
-            alerts.test_fire,
         )

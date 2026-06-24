@@ -2,18 +2,12 @@
 
 from __future__ import annotations
 
-from typing import Iterable
 from typing_extensions import Required, TypedDict
-
-from ..alert_channel_param import AlertChannelParam
-from ..maintenance_window_param import MaintenanceWindowParam
 
 __all__ = ["AlertReplaceParams"]
 
 
 class AlertReplaceParams(TypedDict, total=False):
-    channels: Required[Iterable[AlertChannelParam]]
-
     consecutive_failures_threshold: Required[int]
     """
     Number of consecutive globally-failing observations (after M-of-N consensus
@@ -43,9 +37,3 @@ class AlertReplaceParams(TypedDict, total=False):
 
     check_id: str
     """Server-set; ignored on write."""
-
-    maintenance_windows: Iterable[MaintenanceWindowParam]
-    """
-    Absolute-time windows during which the evaluator suppresses dispatch but still
-    updates state. Cron-style recurring windows are a future enhancement.
-    """

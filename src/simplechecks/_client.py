@@ -47,7 +47,10 @@ if TYPE_CHECKING:
         incidents,
         locations,
         purchases,
+        alert_channels,
         checkout_sessions,
+        alert_subscriptions,
+        maintenance_windows,
     )
     from .resources.keys import KeysResource, AsyncKeysResource
     from .resources.runs import RunsResource, AsyncRunsResource
@@ -58,8 +61,11 @@ if TYPE_CHECKING:
     from .resources.locations import LocationsResource, AsyncLocationsResource
     from .resources.purchases import PurchasesResource, AsyncPurchasesResource
     from .resources.checks.checks import ChecksResource, AsyncChecksResource
+    from .resources.alert_channels import AlertChannelsResource, AsyncAlertChannelsResource
     from .resources.members.members import MembersResource, AsyncMembersResource
     from .resources.checkout_sessions import CheckoutSessionsResource, AsyncCheckoutSessionsResource
+    from .resources.alert_subscriptions import AlertSubscriptionsResource, AsyncAlertSubscriptionsResource
+    from .resources.maintenance_windows import MaintenanceWindowsResource, AsyncMaintenanceWindowsResource
 
 __all__ = [
     "ENVIRONMENTS",
@@ -197,6 +203,38 @@ class SimpleChecks(SyncAPIClient):
         from .resources.keys import KeysResource
 
         return KeysResource(self)
+
+    @cached_property
+    def alert_channels(self) -> AlertChannelsResource:
+        """
+        Reusable, account-scoped notification destinations (webhook,
+        Slack, Discord, Teams, PagerDuty, Opsgenie, email). One channel
+        can serve many checks. Includes a test-fire endpoint.
+        """
+        from .resources.alert_channels import AlertChannelsResource
+
+        return AlertChannelsResource(self)
+
+    @cached_property
+    def alert_subscriptions(self) -> AlertSubscriptionsResource:
+        """
+        Bindings of a check to an alert channel, each carrying its own
+        notify-on-failure / notify-on-recovery flags.
+        """
+        from .resources.alert_subscriptions import AlertSubscriptionsResource
+
+        return AlertSubscriptionsResource(self)
+
+    @cached_property
+    def maintenance_windows(self) -> MaintenanceWindowsResource:
+        """
+        Account-scoped windows that pause execution of their targeted
+        checks for the scheduled interval(s); paused runs are not recorded
+        and never count against uptime.
+        """
+        from .resources.maintenance_windows import MaintenanceWindowsResource
+
+        return MaintenanceWindowsResource(self)
 
     @cached_property
     def balance(self) -> BalanceResource:
@@ -499,6 +537,38 @@ class AsyncSimpleChecks(AsyncAPIClient):
         return AsyncKeysResource(self)
 
     @cached_property
+    def alert_channels(self) -> AsyncAlertChannelsResource:
+        """
+        Reusable, account-scoped notification destinations (webhook,
+        Slack, Discord, Teams, PagerDuty, Opsgenie, email). One channel
+        can serve many checks. Includes a test-fire endpoint.
+        """
+        from .resources.alert_channels import AsyncAlertChannelsResource
+
+        return AsyncAlertChannelsResource(self)
+
+    @cached_property
+    def alert_subscriptions(self) -> AsyncAlertSubscriptionsResource:
+        """
+        Bindings of a check to an alert channel, each carrying its own
+        notify-on-failure / notify-on-recovery flags.
+        """
+        from .resources.alert_subscriptions import AsyncAlertSubscriptionsResource
+
+        return AsyncAlertSubscriptionsResource(self)
+
+    @cached_property
+    def maintenance_windows(self) -> AsyncMaintenanceWindowsResource:
+        """
+        Account-scoped windows that pause execution of their targeted
+        checks for the scheduled interval(s); paused runs are not recorded
+        and never count against uptime.
+        """
+        from .resources.maintenance_windows import AsyncMaintenanceWindowsResource
+
+        return AsyncMaintenanceWindowsResource(self)
+
+    @cached_property
     def balance(self) -> AsyncBalanceResource:
         """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
         from .resources.balance import AsyncBalanceResource
@@ -721,6 +791,38 @@ class SimpleChecksWithRawResponse:
         return KeysResourceWithRawResponse(self._client.keys)
 
     @cached_property
+    def alert_channels(self) -> alert_channels.AlertChannelsResourceWithRawResponse:
+        """
+        Reusable, account-scoped notification destinations (webhook,
+        Slack, Discord, Teams, PagerDuty, Opsgenie, email). One channel
+        can serve many checks. Includes a test-fire endpoint.
+        """
+        from .resources.alert_channels import AlertChannelsResourceWithRawResponse
+
+        return AlertChannelsResourceWithRawResponse(self._client.alert_channels)
+
+    @cached_property
+    def alert_subscriptions(self) -> alert_subscriptions.AlertSubscriptionsResourceWithRawResponse:
+        """
+        Bindings of a check to an alert channel, each carrying its own
+        notify-on-failure / notify-on-recovery flags.
+        """
+        from .resources.alert_subscriptions import AlertSubscriptionsResourceWithRawResponse
+
+        return AlertSubscriptionsResourceWithRawResponse(self._client.alert_subscriptions)
+
+    @cached_property
+    def maintenance_windows(self) -> maintenance_windows.MaintenanceWindowsResourceWithRawResponse:
+        """
+        Account-scoped windows that pause execution of their targeted
+        checks for the scheduled interval(s); paused runs are not recorded
+        and never count against uptime.
+        """
+        from .resources.maintenance_windows import MaintenanceWindowsResourceWithRawResponse
+
+        return MaintenanceWindowsResourceWithRawResponse(self._client.maintenance_windows)
+
+    @cached_property
     def balance(self) -> balance.BalanceResourceWithRawResponse:
         """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
         from .resources.balance import BalanceResourceWithRawResponse
@@ -816,6 +918,38 @@ class AsyncSimpleChecksWithRawResponse:
         from .resources.keys import AsyncKeysResourceWithRawResponse
 
         return AsyncKeysResourceWithRawResponse(self._client.keys)
+
+    @cached_property
+    def alert_channels(self) -> alert_channels.AsyncAlertChannelsResourceWithRawResponse:
+        """
+        Reusable, account-scoped notification destinations (webhook,
+        Slack, Discord, Teams, PagerDuty, Opsgenie, email). One channel
+        can serve many checks. Includes a test-fire endpoint.
+        """
+        from .resources.alert_channels import AsyncAlertChannelsResourceWithRawResponse
+
+        return AsyncAlertChannelsResourceWithRawResponse(self._client.alert_channels)
+
+    @cached_property
+    def alert_subscriptions(self) -> alert_subscriptions.AsyncAlertSubscriptionsResourceWithRawResponse:
+        """
+        Bindings of a check to an alert channel, each carrying its own
+        notify-on-failure / notify-on-recovery flags.
+        """
+        from .resources.alert_subscriptions import AsyncAlertSubscriptionsResourceWithRawResponse
+
+        return AsyncAlertSubscriptionsResourceWithRawResponse(self._client.alert_subscriptions)
+
+    @cached_property
+    def maintenance_windows(self) -> maintenance_windows.AsyncMaintenanceWindowsResourceWithRawResponse:
+        """
+        Account-scoped windows that pause execution of their targeted
+        checks for the scheduled interval(s); paused runs are not recorded
+        and never count against uptime.
+        """
+        from .resources.maintenance_windows import AsyncMaintenanceWindowsResourceWithRawResponse
+
+        return AsyncMaintenanceWindowsResourceWithRawResponse(self._client.maintenance_windows)
 
     @cached_property
     def balance(self) -> balance.AsyncBalanceResourceWithRawResponse:
@@ -915,6 +1049,38 @@ class SimpleChecksWithStreamedResponse:
         return KeysResourceWithStreamingResponse(self._client.keys)
 
     @cached_property
+    def alert_channels(self) -> alert_channels.AlertChannelsResourceWithStreamingResponse:
+        """
+        Reusable, account-scoped notification destinations (webhook,
+        Slack, Discord, Teams, PagerDuty, Opsgenie, email). One channel
+        can serve many checks. Includes a test-fire endpoint.
+        """
+        from .resources.alert_channels import AlertChannelsResourceWithStreamingResponse
+
+        return AlertChannelsResourceWithStreamingResponse(self._client.alert_channels)
+
+    @cached_property
+    def alert_subscriptions(self) -> alert_subscriptions.AlertSubscriptionsResourceWithStreamingResponse:
+        """
+        Bindings of a check to an alert channel, each carrying its own
+        notify-on-failure / notify-on-recovery flags.
+        """
+        from .resources.alert_subscriptions import AlertSubscriptionsResourceWithStreamingResponse
+
+        return AlertSubscriptionsResourceWithStreamingResponse(self._client.alert_subscriptions)
+
+    @cached_property
+    def maintenance_windows(self) -> maintenance_windows.MaintenanceWindowsResourceWithStreamingResponse:
+        """
+        Account-scoped windows that pause execution of their targeted
+        checks for the scheduled interval(s); paused runs are not recorded
+        and never count against uptime.
+        """
+        from .resources.maintenance_windows import MaintenanceWindowsResourceWithStreamingResponse
+
+        return MaintenanceWindowsResourceWithStreamingResponse(self._client.maintenance_windows)
+
+    @cached_property
     def balance(self) -> balance.BalanceResourceWithStreamingResponse:
         """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
         from .resources.balance import BalanceResourceWithStreamingResponse
@@ -1010,6 +1176,38 @@ class AsyncSimpleChecksWithStreamedResponse:
         from .resources.keys import AsyncKeysResourceWithStreamingResponse
 
         return AsyncKeysResourceWithStreamingResponse(self._client.keys)
+
+    @cached_property
+    def alert_channels(self) -> alert_channels.AsyncAlertChannelsResourceWithStreamingResponse:
+        """
+        Reusable, account-scoped notification destinations (webhook,
+        Slack, Discord, Teams, PagerDuty, Opsgenie, email). One channel
+        can serve many checks. Includes a test-fire endpoint.
+        """
+        from .resources.alert_channels import AsyncAlertChannelsResourceWithStreamingResponse
+
+        return AsyncAlertChannelsResourceWithStreamingResponse(self._client.alert_channels)
+
+    @cached_property
+    def alert_subscriptions(self) -> alert_subscriptions.AsyncAlertSubscriptionsResourceWithStreamingResponse:
+        """
+        Bindings of a check to an alert channel, each carrying its own
+        notify-on-failure / notify-on-recovery flags.
+        """
+        from .resources.alert_subscriptions import AsyncAlertSubscriptionsResourceWithStreamingResponse
+
+        return AsyncAlertSubscriptionsResourceWithStreamingResponse(self._client.alert_subscriptions)
+
+    @cached_property
+    def maintenance_windows(self) -> maintenance_windows.AsyncMaintenanceWindowsResourceWithStreamingResponse:
+        """
+        Account-scoped windows that pause execution of their targeted
+        checks for the scheduled interval(s); paused runs are not recorded
+        and never count against uptime.
+        """
+        from .resources.maintenance_windows import AsyncMaintenanceWindowsResourceWithStreamingResponse
+
+        return AsyncMaintenanceWindowsResourceWithStreamingResponse(self._client.maintenance_windows)
 
     @cached_property
     def balance(self) -> balance.AsyncBalanceResourceWithStreamingResponse:

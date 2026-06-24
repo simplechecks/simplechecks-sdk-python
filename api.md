@@ -15,7 +15,7 @@ Methods:
 Types:
 
 ```python
-from simplechecks.types import AlertChannel, AlertConfig, Check, MaintenanceWindow
+from simplechecks.types import AlertConfig, Check
 ```
 
 Methods:
@@ -28,18 +28,11 @@ Methods:
 
 ## Alerts
 
-Types:
-
-```python
-from simplechecks.types.checks import AlertTestFireResponse
-```
-
 Methods:
 
 - <code title="get /v1/checks/{id}/alerts">client.checks.alerts.<a href="./src/simplechecks/resources/checks/alerts.py">retrieve</a>(id) -> <a href="./src/simplechecks/types/alert_config.py">AlertConfig</a></code>
 - <code title="delete /v1/checks/{id}/alerts">client.checks.alerts.<a href="./src/simplechecks/resources/checks/alerts.py">delete</a>(id) -> None</code>
 - <code title="put /v1/checks/{id}/alerts">client.checks.alerts.<a href="./src/simplechecks/resources/checks/alerts.py">replace</a>(id, \*\*<a href="src/simplechecks/types/checks/alert_replace_params.py">params</a>) -> <a href="./src/simplechecks/types/alert_config.py">AlertConfig</a></code>
-- <code title="post /v1/checks/{id}/alerts:test">client.checks.alerts.<a href="./src/simplechecks/resources/checks/alerts.py">test_fire</a>(id) -> <a href="./src/simplechecks/types/checks/alert_test_fire_response.py">AlertTestFireResponse</a></code>
 
 # Runs
 
@@ -87,6 +80,55 @@ Methods:
 - <code title="post /v1/keys">client.keys.<a href="./src/simplechecks/resources/keys.py">create</a>(\*\*<a href="src/simplechecks/types/key_create_params.py">params</a>) -> <a href="./src/simplechecks/types/key_create_response.py">KeyCreateResponse</a></code>
 - <code title="get /v1/keys">client.keys.<a href="./src/simplechecks/resources/keys.py">list</a>() -> <a href="./src/simplechecks/types/key_list_response.py">KeyListResponse</a></code>
 - <code title="delete /v1/keys/{id}">client.keys.<a href="./src/simplechecks/resources/keys.py">revoke</a>(id) -> None</code>
+
+# AlertChannels
+
+Types:
+
+```python
+from simplechecks.types import AlertChannel, AlertChannelTestFireResponse
+```
+
+Methods:
+
+- <code title="post /v1/alert-channels">client.alert_channels.<a href="./src/simplechecks/resources/alert_channels.py">create</a>(\*\*<a href="src/simplechecks/types/alert_channel_create_params.py">params</a>) -> <a href="./src/simplechecks/types/alert_channel.py">AlertChannel</a></code>
+- <code title="get /v1/alert-channels/{id}">client.alert_channels.<a href="./src/simplechecks/resources/alert_channels.py">retrieve</a>(id) -> <a href="./src/simplechecks/types/alert_channel.py">AlertChannel</a></code>
+- <code title="patch /v1/alert-channels/{id}">client.alert_channels.<a href="./src/simplechecks/resources/alert_channels.py">update</a>(id, \*\*<a href="src/simplechecks/types/alert_channel_update_params.py">params</a>) -> <a href="./src/simplechecks/types/alert_channel.py">AlertChannel</a></code>
+- <code title="get /v1/alert-channels">client.alert_channels.<a href="./src/simplechecks/resources/alert_channels.py">list</a>(\*\*<a href="src/simplechecks/types/alert_channel_list_params.py">params</a>) -> <a href="./src/simplechecks/types/alert_channel.py">SyncAlertChannelsCursor[AlertChannel]</a></code>
+- <code title="delete /v1/alert-channels/{id}">client.alert_channels.<a href="./src/simplechecks/resources/alert_channels.py">delete</a>(id) -> None</code>
+- <code title="post /v1/alert-channels/{id}:test">client.alert_channels.<a href="./src/simplechecks/resources/alert_channels.py">test_fire</a>(id) -> <a href="./src/simplechecks/types/alert_channel_test_fire_response.py">AlertChannelTestFireResponse</a></code>
+
+# AlertSubscriptions
+
+Types:
+
+```python
+from simplechecks.types import AlertSubscription
+```
+
+Methods:
+
+- <code title="post /v1/alert-subscriptions">client.alert_subscriptions.<a href="./src/simplechecks/resources/alert_subscriptions.py">create</a>(\*\*<a href="src/simplechecks/types/alert_subscription_create_params.py">params</a>) -> <a href="./src/simplechecks/types/alert_subscription.py">AlertSubscription</a></code>
+- <code title="get /v1/alert-subscriptions/{id}">client.alert_subscriptions.<a href="./src/simplechecks/resources/alert_subscriptions.py">retrieve</a>(id) -> <a href="./src/simplechecks/types/alert_subscription.py">AlertSubscription</a></code>
+- <code title="patch /v1/alert-subscriptions/{id}">client.alert_subscriptions.<a href="./src/simplechecks/resources/alert_subscriptions.py">update</a>(id, \*\*<a href="src/simplechecks/types/alert_subscription_update_params.py">params</a>) -> <a href="./src/simplechecks/types/alert_subscription.py">AlertSubscription</a></code>
+- <code title="get /v1/alert-subscriptions">client.alert_subscriptions.<a href="./src/simplechecks/resources/alert_subscriptions.py">list</a>(\*\*<a href="src/simplechecks/types/alert_subscription_list_params.py">params</a>) -> <a href="./src/simplechecks/types/alert_subscription.py">SyncAlertSubscriptionsCursor[AlertSubscription]</a></code>
+- <code title="delete /v1/alert-subscriptions/{id}">client.alert_subscriptions.<a href="./src/simplechecks/resources/alert_subscriptions.py">delete</a>(id) -> None</code>
+
+# MaintenanceWindows
+
+Types:
+
+```python
+from simplechecks.types import MaintenanceWindow
+```
+
+Methods:
+
+- <code title="post /v1/maintenance-windows">client.maintenance_windows.<a href="./src/simplechecks/resources/maintenance_windows.py">create</a>(\*\*<a href="src/simplechecks/types/maintenance_window_create_params.py">params</a>) -> <a href="./src/simplechecks/types/maintenance_window.py">MaintenanceWindow</a></code>
+- <code title="get /v1/maintenance-windows/{id}">client.maintenance_windows.<a href="./src/simplechecks/resources/maintenance_windows.py">retrieve</a>(id) -> <a href="./src/simplechecks/types/maintenance_window.py">MaintenanceWindow</a></code>
+- <code title="patch /v1/maintenance-windows/{id}">client.maintenance_windows.<a href="./src/simplechecks/resources/maintenance_windows.py">update</a>(id, \*\*<a href="src/simplechecks/types/maintenance_window_update_params.py">params</a>) -> <a href="./src/simplechecks/types/maintenance_window.py">MaintenanceWindow</a></code>
+- <code title="get /v1/maintenance-windows">client.maintenance_windows.<a href="./src/simplechecks/resources/maintenance_windows.py">list</a>(\*\*<a href="src/simplechecks/types/maintenance_window_list_params.py">params</a>) -> <a href="./src/simplechecks/types/maintenance_window.py">SyncMaintenanceWindowsCursor[MaintenanceWindow]</a></code>
+- <code title="delete /v1/maintenance-windows/{id}">client.maintenance_windows.<a href="./src/simplechecks/resources/maintenance_windows.py">delete</a>(id) -> None</code>
 
 # Balance
 
