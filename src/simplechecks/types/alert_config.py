@@ -1,17 +1,21 @@
 # File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
-from typing import List, Optional
+from typing import Optional
 from datetime import datetime
 
 from .._models import BaseModel
-from .alert_channel import AlertChannel
-from .maintenance_window import MaintenanceWindow
 
 __all__ = ["AlertConfig"]
 
 
 class AlertConfig(BaseModel):
-    channels: List[AlertChannel]
+    """Per-check alert *settings* (settings-only as of the alerting entity
+    model).
+
+    Notification destinations live in first-class
+    `/v1/alert-channels` bound to checks via `/v1/alert-subscriptions`;
+    pause-execution windows live in `/v1/maintenance-windows`.
+    """
 
     consecutive_failures_threshold: int
     """
@@ -44,11 +48,5 @@ class AlertConfig(BaseModel):
     """Server-set; ignored on write."""
 
     created_at: Optional[datetime] = None
-
-    maintenance_windows: Optional[List[MaintenanceWindow]] = None
-    """
-    Absolute-time windows during which the evaluator suppresses dispatch but still
-    updates state. Cron-style recurring windows are a future enhancement.
-    """
 
     updated_at: Optional[datetime] = None

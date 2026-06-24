@@ -23,8 +23,8 @@ from .check_list_params import CheckListParams as CheckListParams
 from .key_create_params import KeyCreateParams as KeyCreateParams
 from .key_list_response import KeyListResponse as KeyListResponse
 from .run_logs_response import RunLogsResponse as RunLogsResponse
+from .alert_subscription import AlertSubscription as AlertSubscription
 from .maintenance_window import MaintenanceWindow as MaintenanceWindow
-from .alert_channel_param import AlertChannelParam as AlertChannelParam
 from .check_create_params import CheckCreateParams as CheckCreateParams
 from .check_update_params import CheckUpdateParams as CheckUpdateParams
 from .key_create_response import KeyCreateResponse as KeyCreateResponse
@@ -37,5 +37,14 @@ from .incident_list_response import IncidentListResponse as IncidentListResponse
 from .location_list_response import LocationListResponse as LocationListResponse
 from .purchase_list_response import PurchaseListResponse as PurchaseListResponse
 from .run_aggregates_response import RunAggregatesResponse as RunAggregatesResponse
-from .maintenance_window_param import MaintenanceWindowParam as MaintenanceWindowParam
+from .alert_channel_list_params import AlertChannelListParams as AlertChannelListParams
+from .alert_channel_create_params import AlertChannelCreateParams as AlertChannelCreateParams
+from .alert_channel_update_params import AlertChannelUpdateParams as AlertChannelUpdateParams
+from .alert_subscription_list_params import AlertSubscriptionListParams as AlertSubscriptionListParams
 from .checkout_session_create_params import CheckoutSessionCreateParams as CheckoutSessionCreateParams
+from .maintenance_window_list_params import MaintenanceWindowListParams as MaintenanceWindowListParams
+from .alert_channel_test_fire_response import AlertChannelTestFireResponse as AlertChannelTestFireResponse
+from .alert_subscription_create_params import AlertSubscriptionCreateParams as AlertSubscriptionCreateParams
+from .alert_subscription_update_params import AlertSubscriptionUpdateParams as AlertSubscriptionUpdateParams
+from .maintenance_window_create_params import MaintenanceWindowCreateParams as MaintenanceWindowCreateParams
+from .maintenance_window_update_params import MaintenanceWindowUpdateParams as MaintenanceWindowUpdateParams
