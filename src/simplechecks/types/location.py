@@ -30,11 +30,16 @@ class Location(BaseModel):
     provider: str
     """Cloud provider."""
 
-    status: Literal["ready", "draining", "maintenance", "unprovisioned"]
-    """Live garrison status.
+    status: Literal["provisioning", "ready", "degraded", "unprovisioned", "draining", "maintenance", "scaling"]
+    """Live garrison status as reported by command-center.
 
-    `unprovisioned` means the location is code-defined but no garrison row exists
-    yet (deploy pending); dashboard typically greys these out.
+    The endpoint returns the garrison's stored status verbatim, so this enum lists
+    every value the state machine can surface: `provisioning` — a garrison row
+    exists but is not yet serving; `ready` — serving normally; `degraded` — serving
+    but a broken-probe signal is firing; `unprovisioned` — the location is
+    code-defined but no garrison row exists yet (deploy pending), typically greyed
+    out in the dashboard; `draining`, `maintenance`, `scaling` — sticky operator-set
+    states that automated transitions preserve rather than clobber.
     """
 
     lat: Optional[float] = None
