@@ -60,12 +60,12 @@ Methods:
 Types:
 
 ```python
-from simplechecks.types import Incident, IncidentListResponse
+from simplechecks.types import Incident
 ```
 
 Methods:
 
-- <code title="get /v1/incidents">client.incidents.<a href="./src/simplechecks/resources/incidents.py">list</a>(\*\*<a href="src/simplechecks/types/incident_list_params.py">params</a>) -> <a href="./src/simplechecks/types/incident_list_response.py">IncidentListResponse</a></code>
+- <code title="get /v1/incidents">client.incidents.<a href="./src/simplechecks/resources/incidents.py">list</a>(\*\*<a href="src/simplechecks/types/incident_list_params.py">params</a>) -> <a href="./src/simplechecks/types/incident.py">SyncIncidentsOffset[Incident]</a></code>
 
 # Keys
 

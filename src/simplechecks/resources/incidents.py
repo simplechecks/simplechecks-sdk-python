@@ -6,7 +6,7 @@ import httpx
 
 from ..types import incident_list_params
 from .._types import Body, Omit, Query, Headers, NotGiven, omit, not_given
-from .._utils import maybe_transform, async_maybe_transform
+from .._utils import maybe_transform
 from .._compat import cached_property
 from .._resource import SyncAPIResource, AsyncAPIResource
 from .._response import (
@@ -15,8 +15,9 @@ from .._response import (
     async_to_raw_response_wrapper,
     async_to_streamed_response_wrapper,
 )
-from .._base_client import make_request_options
-from ..types.incident_list_response import IncidentListResponse
+from ..pagination import SyncIncidentsOffset, AsyncIncidentsOffset
+from .._base_client import AsyncPaginator, make_request_options
+from ..types.incident import Incident
 
 __all__ = ["IncidentsResource", "AsyncIncidentsResource"]
 
@@ -54,7 +55,7 @@ class IncidentsResource(SyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> IncidentListResponse:
+    ) -> SyncIncidentsOffset[Incident]:
         """
         Returns incidents derived on read from `alert_state` (ongoing) and
         `alert_dispatches` (resolved). Ordered ongoing-first, then most-recent-resolved
@@ -88,8 +89,9 @@ class IncidentsResource(SyncAPIResource):
 
           timeout: Override the client-level default timeout for this request, in seconds
         """
-        return self._get(
+        return self._get_api_list(
             "/v1/incidents",
+            page=SyncIncidentsOffset[Incident],
             options=make_request_options(
                 extra_headers=extra_headers,
                 extra_query=extra_query,
@@ -103,7 +105,7 @@ class IncidentsResource(SyncAPIResource):
                     incident_list_params.IncidentListParams,
                 ),
             ),
-            cast_to=IncidentListResponse,
+            model=Incident,
         )
 
 
@@ -129,7 +131,7 @@ class AsyncIncidentsResource(AsyncAPIResource):
         """
         return AsyncIncidentsResourceWithStreamingResponse(self)
 
-    async def list(
+    def list(
         self,
         *,
         limit: int | Omit = omit,
@@ -140,7 +142,7 @@ class AsyncIncidentsResource(AsyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> IncidentListResponse:
+    ) -> AsyncPaginator[Incident, AsyncIncidentsOffset[Incident]]:
         """
         Returns incidents derived on read from `alert_state` (ongoing) and
         `alert_dispatches` (resolved). Ordered ongoing-first, then most-recent-resolved
@@ -174,14 +176,15 @@ class AsyncIncidentsResource(AsyncAPIResource):
 
           timeout: Override the client-level default timeout for this request, in seconds
         """
-        return await self._get(
+        return self._get_api_list(
             "/v1/incidents",
+            page=AsyncIncidentsOffset[Incident],
             options=make_request_options(
                 extra_headers=extra_headers,
                 extra_query=extra_query,
                 extra_body=extra_body,
                 timeout=timeout,
-                query=await async_maybe_transform(
+                query=maybe_transform(
                     {
                         "limit": limit,
                         "offset": offset,
@@ -189,7 +192,7 @@ class AsyncIncidentsResource(AsyncAPIResource):
                     incident_list_params.IncidentListParams,
                 ),
             ),
-            cast_to=IncidentListResponse,
+            model=Incident,
         )
 
 
