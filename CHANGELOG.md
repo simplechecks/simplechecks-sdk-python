@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.4.0 (2026-07-01)
+
+Full Changelog: [v0.3.0...v0.4.0](https://github.com/simplechecks/simplechecks-sdk-python/compare/v0.3.0...v0.4.0)
+
+### Features
+
+* **api:** api update ([4350797](https://github.com/simplechecks/simplechecks-sdk-python/commit/4350797e6550b8fde52ca07e5f7488f098b4db15))
+* **api:** api update ([892965f](https://github.com/simplechecks/simplechecks-sdk-python/commit/892965f994eb48925c9c4a64b9a498985749a3e7))
+* **api:** api update ([33b6e00](https://github.com/simplechecks/simplechecks-sdk-python/commit/33b6e00dde6c95d34075b89a1ba34c30cfa13b7e))
+* **api:** api update ([636e022](https://github.com/simplechecks/simplechecks-sdk-python/commit/636e022e1cc4d8633cc973a620cb50c2e7913492))
+* **api:** api update ([c4b2f1e](https://github.com/simplechecks/simplechecks-sdk-python/commit/c4b2f1e56d6a722fcdb2e9410ffaa9fa0c1bafae))
+* **api:** api update ([014aca8](https://github.com/simplechecks/simplechecks-sdk-python/commit/014aca83005b3600b5cbb64653497fbc60f85eed))
+* **api:** api update ([9eeca09](https://github.com/simplechecks/simplechecks-sdk-python/commit/9eeca0913a7ef92da4e44c53fcd02c0d9f159d7b))
+* **api:** api update ([dd63d60](https://github.com/simplechecks/simplechecks-sdk-python/commit/dd63d609c0f1a636f04aadb5faa35fe6bc55c92e))
+* **api:** api update ([e965290](https://github.com/simplechecks/simplechecks-sdk-python/commit/e9652905ce6c850d6a1b87992c987bfca2ceef75))
+* **internal/types:** support eagerly validating pydantic iterators ([e0b6e76](https://github.com/simplechecks/simplechecks-sdk-python/commit/e0b6e76d742b48b4384f4ea44284b46ebd25b8f4))
+
 ## 0.3.0 (2026-05-10)
 
 Full Changelog: [v0.2.0...v0.3.0](https://github.com/simplechecks/simplechecks-sdk-python/compare/v0.2.0...v0.3.0)
