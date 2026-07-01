@@ -8,6 +8,8 @@ from ._base_client import BasePage, PageInfo, BaseSyncPage, BaseAsyncPage
 __all__ = [
     "SyncOffset",
     "AsyncOffset",
+    "SyncIncidentsOffset",
+    "AsyncIncidentsOffset",
     "SyncRunsCursor",
     "AsyncRunsCursor",
     "SyncAlertChannelsCursor",
@@ -54,6 +56,52 @@ class AsyncOffset(BaseAsyncPage[_T], BasePage[_T], Generic[_T]):
         if not checks:
             return []
         return checks
+
+    @override
+    def next_page_info(self) -> Optional[PageInfo]:
+        offset = self._options.params.get("offset") or 0
+        if not isinstance(offset, int):
+            raise ValueError(f'Expected "offset" param to be an integer but got {offset}')
+
+        length = len(self._get_page_items())
+        current_count = offset + length
+
+        return PageInfo(params={"offset": current_count})
+
+
+class SyncIncidentsOffset(BaseSyncPage[_T], BasePage[_T], Generic[_T]):
+    incidents: List[_T]
+    next_offset: Optional[int] = None
+
+    @override
+    def _get_page_items(self) -> List[_T]:
+        incidents = self.incidents
+        if not incidents:
+            return []
+        return incidents
+
+    @override
+    def next_page_info(self) -> Optional[PageInfo]:
+        offset = self._options.params.get("offset") or 0
+        if not isinstance(offset, int):
+            raise ValueError(f'Expected "offset" param to be an integer but got {offset}')
+
+        length = len(self._get_page_items())
+        current_count = offset + length
+
+        return PageInfo(params={"offset": current_count})
+
+
+class AsyncIncidentsOffset(BaseAsyncPage[_T], BasePage[_T], Generic[_T]):
+    incidents: List[_T]
+    next_offset: Optional[int] = None
+
+    @override
+    def _get_page_items(self) -> List[_T]:
+        incidents = self.incidents
+        if not incidents:
+            return []
+        return incidents
 
     @override
     def next_page_info(self) -> Optional[PageInfo]:
