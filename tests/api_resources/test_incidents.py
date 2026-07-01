@@ -9,7 +9,8 @@ import pytest
 
 from tests.utils import assert_matches_type
 from simplechecks import SimpleChecks, AsyncSimpleChecks
-from simplechecks.types import IncidentListResponse
+from simplechecks.types import Incident
+from simplechecks.pagination import SyncIncidentsOffset, AsyncIncidentsOffset
 
 base_url = os.environ.get("TEST_API_BASE_URL", "http://127.0.0.1:4010")
 
@@ -20,7 +21,7 @@ class TestIncidents:
     @parametrize
     def test_method_list(self, client: SimpleChecks) -> None:
         incident = client.incidents.list()
-        assert_matches_type(IncidentListResponse, incident, path=["response"])
+        assert_matches_type(SyncIncidentsOffset[Incident], incident, path=["response"])
 
     @parametrize
     def test_method_list_with_all_params(self, client: SimpleChecks) -> None:
@@ -28,7 +29,7 @@ class TestIncidents:
             limit=1,
             offset=0,
         )
-        assert_matches_type(IncidentListResponse, incident, path=["response"])
+        assert_matches_type(SyncIncidentsOffset[Incident], incident, path=["response"])
 
     @parametrize
     def test_raw_response_list(self, client: SimpleChecks) -> None:
@@ -37,7 +38,7 @@ class TestIncidents:
         assert response.is_closed is True
         assert response.http_request.headers.get("X-Stainless-Lang") == "python"
         incident = response.parse()
-        assert_matches_type(IncidentListResponse, incident, path=["response"])
+        assert_matches_type(SyncIncidentsOffset[Incident], incident, path=["response"])
 
     @parametrize
     def test_streaming_response_list(self, client: SimpleChecks) -> None:
@@ -46,7 +47,7 @@ class TestIncidents:
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
 
             incident = response.parse()
-            assert_matches_type(IncidentListResponse, incident, path=["response"])
+            assert_matches_type(SyncIncidentsOffset[Incident], incident, path=["response"])
 
         assert cast(Any, response.is_closed) is True
 
@@ -59,7 +60,7 @@ class TestAsyncIncidents:
     @parametrize
     async def test_method_list(self, async_client: AsyncSimpleChecks) -> None:
         incident = await async_client.incidents.list()
-        assert_matches_type(IncidentListResponse, incident, path=["response"])
+        assert_matches_type(AsyncIncidentsOffset[Incident], incident, path=["response"])
 
     @parametrize
     async def test_method_list_with_all_params(self, async_client: AsyncSimpleChecks) -> None:
@@ -67,7 +68,7 @@ class TestAsyncIncidents:
             limit=1,
             offset=0,
         )
-        assert_matches_type(IncidentListResponse, incident, path=["response"])
+        assert_matches_type(AsyncIncidentsOffset[Incident], incident, path=["response"])
 
     @parametrize
     async def test_raw_response_list(self, async_client: AsyncSimpleChecks) -> None:
@@ -76,7 +77,7 @@ class TestAsyncIncidents:
         assert response.is_closed is True
         assert response.http_request.headers.get("X-Stainless-Lang") == "python"
         incident = await response.parse()
-        assert_matches_type(IncidentListResponse, incident, path=["response"])
+        assert_matches_type(AsyncIncidentsOffset[Incident], incident, path=["response"])
 
     @parametrize
     async def test_streaming_response_list(self, async_client: AsyncSimpleChecks) -> None:
@@ -85,6 +86,6 @@ class TestAsyncIncidents:
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
 
             incident = await response.parse()
-            assert_matches_type(IncidentListResponse, incident, path=["response"])
+            assert_matches_type(AsyncIncidentsOffset[Incident], incident, path=["response"])
 
         assert cast(Any, response.is_closed) is True

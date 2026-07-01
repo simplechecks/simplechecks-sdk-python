@@ -10,7 +10,6 @@ import pytest
 from tests.utils import assert_matches_type
 from simplechecks import SimpleChecks, AsyncSimpleChecks
 from simplechecks.types import AlertConfig
-from simplechecks.types.checks import AlertTestFireResponse
 
 base_url = os.environ.get("TEST_API_BASE_URL", "http://127.0.0.1:4010")
 
@@ -98,12 +97,6 @@ class TestAlerts:
     def test_method_replace(self, client: SimpleChecks) -> None:
         alert = client.checks.alerts.replace(
             id="182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-            channels=[
-                {
-                    "target": "target",
-                    "type": "email",
-                }
-            ],
             consecutive_failures_threshold=1,
             consensus_m=1,
             consensus_n=1,
@@ -115,25 +108,12 @@ class TestAlerts:
     def test_method_replace_with_all_params(self, client: SimpleChecks) -> None:
         alert = client.checks.alerts.replace(
             id="182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-            channels=[
-                {
-                    "target": "target",
-                    "type": "email",
-                    "config": {"foo": "bar"},
-                }
-            ],
             consecutive_failures_threshold=1,
             consensus_m=1,
             consensus_n=1,
             enabled=True,
             account_id="182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
             check_id="182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-            maintenance_windows=[
-                {
-                    "end_unix_ms": 0,
-                    "start_unix_ms": 0,
-                }
-            ],
         )
         assert_matches_type(AlertConfig, alert, path=["response"])
 
@@ -141,12 +121,6 @@ class TestAlerts:
     def test_raw_response_replace(self, client: SimpleChecks) -> None:
         response = client.checks.alerts.with_raw_response.replace(
             id="182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-            channels=[
-                {
-                    "target": "target",
-                    "type": "email",
-                }
-            ],
             consecutive_failures_threshold=1,
             consensus_m=1,
             consensus_n=1,
@@ -162,12 +136,6 @@ class TestAlerts:
     def test_streaming_response_replace(self, client: SimpleChecks) -> None:
         with client.checks.alerts.with_streaming_response.replace(
             id="182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-            channels=[
-                {
-                    "target": "target",
-                    "type": "email",
-                }
-            ],
             consecutive_failures_threshold=1,
             consensus_m=1,
             consensus_n=1,
@@ -186,54 +154,10 @@ class TestAlerts:
         with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
             client.checks.alerts.with_raw_response.replace(
                 id="",
-                channels=[
-                    {
-                        "target": "target",
-                        "type": "email",
-                    }
-                ],
                 consecutive_failures_threshold=1,
                 consensus_m=1,
                 consensus_n=1,
                 enabled=True,
-            )
-
-    @parametrize
-    def test_method_test_fire(self, client: SimpleChecks) -> None:
-        alert = client.checks.alerts.test_fire(
-            "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-        )
-        assert_matches_type(AlertTestFireResponse, alert, path=["response"])
-
-    @parametrize
-    def test_raw_response_test_fire(self, client: SimpleChecks) -> None:
-        response = client.checks.alerts.with_raw_response.test_fire(
-            "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-        )
-
-        assert response.is_closed is True
-        assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-        alert = response.parse()
-        assert_matches_type(AlertTestFireResponse, alert, path=["response"])
-
-    @parametrize
-    def test_streaming_response_test_fire(self, client: SimpleChecks) -> None:
-        with client.checks.alerts.with_streaming_response.test_fire(
-            "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-        ) as response:
-            assert not response.is_closed
-            assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-
-            alert = response.parse()
-            assert_matches_type(AlertTestFireResponse, alert, path=["response"])
-
-        assert cast(Any, response.is_closed) is True
-
-    @parametrize
-    def test_path_params_test_fire(self, client: SimpleChecks) -> None:
-        with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            client.checks.alerts.with_raw_response.test_fire(
-                "",
             )
 
 
@@ -322,12 +246,6 @@ class TestAsyncAlerts:
     async def test_method_replace(self, async_client: AsyncSimpleChecks) -> None:
         alert = await async_client.checks.alerts.replace(
             id="182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-            channels=[
-                {
-                    "target": "target",
-                    "type": "email",
-                }
-            ],
             consecutive_failures_threshold=1,
             consensus_m=1,
             consensus_n=1,
@@ -339,25 +257,12 @@ class TestAsyncAlerts:
     async def test_method_replace_with_all_params(self, async_client: AsyncSimpleChecks) -> None:
         alert = await async_client.checks.alerts.replace(
             id="182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-            channels=[
-                {
-                    "target": "target",
-                    "type": "email",
-                    "config": {"foo": "bar"},
-                }
-            ],
             consecutive_failures_threshold=1,
             consensus_m=1,
             consensus_n=1,
             enabled=True,
             account_id="182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
             check_id="182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-            maintenance_windows=[
-                {
-                    "end_unix_ms": 0,
-                    "start_unix_ms": 0,
-                }
-            ],
         )
         assert_matches_type(AlertConfig, alert, path=["response"])
 
@@ -365,12 +270,6 @@ class TestAsyncAlerts:
     async def test_raw_response_replace(self, async_client: AsyncSimpleChecks) -> None:
         response = await async_client.checks.alerts.with_raw_response.replace(
             id="182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-            channels=[
-                {
-                    "target": "target",
-                    "type": "email",
-                }
-            ],
             consecutive_failures_threshold=1,
             consensus_m=1,
             consensus_n=1,
@@ -386,12 +285,6 @@ class TestAsyncAlerts:
     async def test_streaming_response_replace(self, async_client: AsyncSimpleChecks) -> None:
         async with async_client.checks.alerts.with_streaming_response.replace(
             id="182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-            channels=[
-                {
-                    "target": "target",
-                    "type": "email",
-                }
-            ],
             consecutive_failures_threshold=1,
             consensus_m=1,
             consensus_n=1,
@@ -410,52 +303,8 @@ class TestAsyncAlerts:
         with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
             await async_client.checks.alerts.with_raw_response.replace(
                 id="",
-                channels=[
-                    {
-                        "target": "target",
-                        "type": "email",
-                    }
-                ],
                 consecutive_failures_threshold=1,
                 consensus_m=1,
                 consensus_n=1,
                 enabled=True,
-            )
-
-    @parametrize
-    async def test_method_test_fire(self, async_client: AsyncSimpleChecks) -> None:
-        alert = await async_client.checks.alerts.test_fire(
-            "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-        )
-        assert_matches_type(AlertTestFireResponse, alert, path=["response"])
-
-    @parametrize
-    async def test_raw_response_test_fire(self, async_client: AsyncSimpleChecks) -> None:
-        response = await async_client.checks.alerts.with_raw_response.test_fire(
-            "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-        )
-
-        assert response.is_closed is True
-        assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-        alert = await response.parse()
-        assert_matches_type(AlertTestFireResponse, alert, path=["response"])
-
-    @parametrize
-    async def test_streaming_response_test_fire(self, async_client: AsyncSimpleChecks) -> None:
-        async with async_client.checks.alerts.with_streaming_response.test_fire(
-            "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-        ) as response:
-            assert not response.is_closed
-            assert response.http_request.headers.get("X-Stainless-Lang") == "python"
-
-            alert = await response.parse()
-            assert_matches_type(AlertTestFireResponse, alert, path=["response"])
-
-        assert cast(Any, response.is_closed) is True
-
-    @parametrize
-    async def test_path_params_test_fire(self, async_client: AsyncSimpleChecks) -> None:
-        with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
-            await async_client.checks.alerts.with_raw_response.test_fire(
-                "",
             )

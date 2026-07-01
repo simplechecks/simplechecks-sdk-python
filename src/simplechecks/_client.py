@@ -36,14 +36,36 @@ from ._base_client import (
 )
 
 if TYPE_CHECKING:
-    from .resources import keys, runs, checks, account, balance, incidents, checkout_sessions
+    from .resources import (
+        keys,
+        runs,
+        checks,
+        account,
+        balance,
+        members,
+        pricing,
+        incidents,
+        locations,
+        purchases,
+        alert_channels,
+        checkout_sessions,
+        alert_subscriptions,
+        maintenance_windows,
+    )
     from .resources.keys import KeysResource, AsyncKeysResource
     from .resources.runs import RunsResource, AsyncRunsResource
     from .resources.account import AccountResource, AsyncAccountResource
     from .resources.balance import BalanceResource, AsyncBalanceResource
+    from .resources.pricing import PricingResource, AsyncPricingResource
     from .resources.incidents import IncidentsResource, AsyncIncidentsResource
+    from .resources.locations import LocationsResource, AsyncLocationsResource
+    from .resources.purchases import PurchasesResource, AsyncPurchasesResource
     from .resources.checks.checks import ChecksResource, AsyncChecksResource
+    from .resources.alert_channels import AlertChannelsResource, AsyncAlertChannelsResource
+    from .resources.members.members import MembersResource, AsyncMembersResource
     from .resources.checkout_sessions import CheckoutSessionsResource, AsyncCheckoutSessionsResource
+    from .resources.alert_subscriptions import AlertSubscriptionsResource, AsyncAlertSubscriptionsResource
+    from .resources.maintenance_windows import MaintenanceWindowsResource, AsyncMaintenanceWindowsResource
 
 __all__ = [
     "ENVIRONMENTS",
@@ -183,18 +205,91 @@ class SimpleChecks(SyncAPIClient):
         return KeysResource(self)
 
     @cached_property
+    def alert_channels(self) -> AlertChannelsResource:
+        """
+        Reusable, account-scoped notification destinations (webhook,
+        Slack, Discord, Teams, PagerDuty, Opsgenie, email). One channel
+        can serve many checks. Includes a test-fire endpoint.
+        """
+        from .resources.alert_channels import AlertChannelsResource
+
+        return AlertChannelsResource(self)
+
+    @cached_property
+    def alert_subscriptions(self) -> AlertSubscriptionsResource:
+        """
+        Bindings of a check to an alert channel, each carrying its own
+        notify-on-failure / notify-on-recovery flags.
+        """
+        from .resources.alert_subscriptions import AlertSubscriptionsResource
+
+        return AlertSubscriptionsResource(self)
+
+    @cached_property
+    def maintenance_windows(self) -> MaintenanceWindowsResource:
+        """
+        Account-scoped windows that pause execution of their targeted
+        checks for the scheduled interval(s); paused runs are not recorded
+        and never count against uptime.
+        """
+        from .resources.maintenance_windows import MaintenanceWindowsResource
+
+        return MaintenanceWindowsResource(self)
+
+    @cached_property
     def balance(self) -> BalanceResource:
-        """Run-credit balance + Stripe Checkout for top-ups."""
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
         from .resources.balance import BalanceResource
 
         return BalanceResource(self)
 
     @cached_property
     def checkout_sessions(self) -> CheckoutSessionsResource:
-        """Run-credit balance + Stripe Checkout for top-ups."""
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
         from .resources.checkout_sessions import CheckoutSessionsResource
 
         return CheckoutSessionsResource(self)
+
+    @cached_property
+    def purchases(self) -> PurchasesResource:
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
+        from .resources.purchases import PurchasesResource
+
+        return PurchasesResource(self)
+
+    @cached_property
+    def members(self) -> MembersResource:
+        """Manage who has access to an account and at what role
+        (PR-Members/2).
+
+        Five roles: owner / admin / member / billing /
+        viewer. Owner is the strict superset of all other roles' scopes;
+        every account always has at least one owner.
+        """
+        from .resources.members import MembersResource
+
+        return MembersResource(self)
+
+    @cached_property
+    def locations(self) -> LocationsResource:
+        """
+        Catalog of (provider, location) deployments Simple Checks runs
+        checks from, with geographic metadata + live status. Used to
+        drive the region picker and the dashboard's locations map.
+        """
+        from .resources.locations import LocationsResource
+
+        return LocationsResource(self)
+
+    @cached_property
+    def pricing(self) -> PricingResource:
+        """
+        Active token-pricing table: per-check-type weights and the
+        customer-facing provider cost multipliers. Reads are free.
+        """
+        from .resources.pricing import PricingResource
+
+        return PricingResource(self)
 
     @cached_property
     def with_raw_response(self) -> SimpleChecksWithRawResponse:
@@ -442,18 +537,91 @@ class AsyncSimpleChecks(AsyncAPIClient):
         return AsyncKeysResource(self)
 
     @cached_property
+    def alert_channels(self) -> AsyncAlertChannelsResource:
+        """
+        Reusable, account-scoped notification destinations (webhook,
+        Slack, Discord, Teams, PagerDuty, Opsgenie, email). One channel
+        can serve many checks. Includes a test-fire endpoint.
+        """
+        from .resources.alert_channels import AsyncAlertChannelsResource
+
+        return AsyncAlertChannelsResource(self)
+
+    @cached_property
+    def alert_subscriptions(self) -> AsyncAlertSubscriptionsResource:
+        """
+        Bindings of a check to an alert channel, each carrying its own
+        notify-on-failure / notify-on-recovery flags.
+        """
+        from .resources.alert_subscriptions import AsyncAlertSubscriptionsResource
+
+        return AsyncAlertSubscriptionsResource(self)
+
+    @cached_property
+    def maintenance_windows(self) -> AsyncMaintenanceWindowsResource:
+        """
+        Account-scoped windows that pause execution of their targeted
+        checks for the scheduled interval(s); paused runs are not recorded
+        and never count against uptime.
+        """
+        from .resources.maintenance_windows import AsyncMaintenanceWindowsResource
+
+        return AsyncMaintenanceWindowsResource(self)
+
+    @cached_property
     def balance(self) -> AsyncBalanceResource:
-        """Run-credit balance + Stripe Checkout for top-ups."""
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
         from .resources.balance import AsyncBalanceResource
 
         return AsyncBalanceResource(self)
 
     @cached_property
     def checkout_sessions(self) -> AsyncCheckoutSessionsResource:
-        """Run-credit balance + Stripe Checkout for top-ups."""
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
         from .resources.checkout_sessions import AsyncCheckoutSessionsResource
 
         return AsyncCheckoutSessionsResource(self)
+
+    @cached_property
+    def purchases(self) -> AsyncPurchasesResource:
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
+        from .resources.purchases import AsyncPurchasesResource
+
+        return AsyncPurchasesResource(self)
+
+    @cached_property
+    def members(self) -> AsyncMembersResource:
+        """Manage who has access to an account and at what role
+        (PR-Members/2).
+
+        Five roles: owner / admin / member / billing /
+        viewer. Owner is the strict superset of all other roles' scopes;
+        every account always has at least one owner.
+        """
+        from .resources.members import AsyncMembersResource
+
+        return AsyncMembersResource(self)
+
+    @cached_property
+    def locations(self) -> AsyncLocationsResource:
+        """
+        Catalog of (provider, location) deployments Simple Checks runs
+        checks from, with geographic metadata + live status. Used to
+        drive the region picker and the dashboard's locations map.
+        """
+        from .resources.locations import AsyncLocationsResource
+
+        return AsyncLocationsResource(self)
+
+    @cached_property
+    def pricing(self) -> AsyncPricingResource:
+        """
+        Active token-pricing table: per-check-type weights and the
+        customer-facing provider cost multipliers. Reads are free.
+        """
+        from .resources.pricing import AsyncPricingResource
+
+        return AsyncPricingResource(self)
 
     @cached_property
     def with_raw_response(self) -> AsyncSimpleChecksWithRawResponse:
@@ -623,18 +791,91 @@ class SimpleChecksWithRawResponse:
         return KeysResourceWithRawResponse(self._client.keys)
 
     @cached_property
+    def alert_channels(self) -> alert_channels.AlertChannelsResourceWithRawResponse:
+        """
+        Reusable, account-scoped notification destinations (webhook,
+        Slack, Discord, Teams, PagerDuty, Opsgenie, email). One channel
+        can serve many checks. Includes a test-fire endpoint.
+        """
+        from .resources.alert_channels import AlertChannelsResourceWithRawResponse
+
+        return AlertChannelsResourceWithRawResponse(self._client.alert_channels)
+
+    @cached_property
+    def alert_subscriptions(self) -> alert_subscriptions.AlertSubscriptionsResourceWithRawResponse:
+        """
+        Bindings of a check to an alert channel, each carrying its own
+        notify-on-failure / notify-on-recovery flags.
+        """
+        from .resources.alert_subscriptions import AlertSubscriptionsResourceWithRawResponse
+
+        return AlertSubscriptionsResourceWithRawResponse(self._client.alert_subscriptions)
+
+    @cached_property
+    def maintenance_windows(self) -> maintenance_windows.MaintenanceWindowsResourceWithRawResponse:
+        """
+        Account-scoped windows that pause execution of their targeted
+        checks for the scheduled interval(s); paused runs are not recorded
+        and never count against uptime.
+        """
+        from .resources.maintenance_windows import MaintenanceWindowsResourceWithRawResponse
+
+        return MaintenanceWindowsResourceWithRawResponse(self._client.maintenance_windows)
+
+    @cached_property
     def balance(self) -> balance.BalanceResourceWithRawResponse:
-        """Run-credit balance + Stripe Checkout for top-ups."""
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
         from .resources.balance import BalanceResourceWithRawResponse
 
         return BalanceResourceWithRawResponse(self._client.balance)
 
     @cached_property
     def checkout_sessions(self) -> checkout_sessions.CheckoutSessionsResourceWithRawResponse:
-        """Run-credit balance + Stripe Checkout for top-ups."""
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
         from .resources.checkout_sessions import CheckoutSessionsResourceWithRawResponse
 
         return CheckoutSessionsResourceWithRawResponse(self._client.checkout_sessions)
+
+    @cached_property
+    def purchases(self) -> purchases.PurchasesResourceWithRawResponse:
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
+        from .resources.purchases import PurchasesResourceWithRawResponse
+
+        return PurchasesResourceWithRawResponse(self._client.purchases)
+
+    @cached_property
+    def members(self) -> members.MembersResourceWithRawResponse:
+        """Manage who has access to an account and at what role
+        (PR-Members/2).
+
+        Five roles: owner / admin / member / billing /
+        viewer. Owner is the strict superset of all other roles' scopes;
+        every account always has at least one owner.
+        """
+        from .resources.members import MembersResourceWithRawResponse
+
+        return MembersResourceWithRawResponse(self._client.members)
+
+    @cached_property
+    def locations(self) -> locations.LocationsResourceWithRawResponse:
+        """
+        Catalog of (provider, location) deployments Simple Checks runs
+        checks from, with geographic metadata + live status. Used to
+        drive the region picker and the dashboard's locations map.
+        """
+        from .resources.locations import LocationsResourceWithRawResponse
+
+        return LocationsResourceWithRawResponse(self._client.locations)
+
+    @cached_property
+    def pricing(self) -> pricing.PricingResourceWithRawResponse:
+        """
+        Active token-pricing table: per-check-type weights and the
+        customer-facing provider cost multipliers. Reads are free.
+        """
+        from .resources.pricing import PricingResourceWithRawResponse
+
+        return PricingResourceWithRawResponse(self._client.pricing)
 
 
 class AsyncSimpleChecksWithRawResponse:
@@ -679,18 +920,91 @@ class AsyncSimpleChecksWithRawResponse:
         return AsyncKeysResourceWithRawResponse(self._client.keys)
 
     @cached_property
+    def alert_channels(self) -> alert_channels.AsyncAlertChannelsResourceWithRawResponse:
+        """
+        Reusable, account-scoped notification destinations (webhook,
+        Slack, Discord, Teams, PagerDuty, Opsgenie, email). One channel
+        can serve many checks. Includes a test-fire endpoint.
+        """
+        from .resources.alert_channels import AsyncAlertChannelsResourceWithRawResponse
+
+        return AsyncAlertChannelsResourceWithRawResponse(self._client.alert_channels)
+
+    @cached_property
+    def alert_subscriptions(self) -> alert_subscriptions.AsyncAlertSubscriptionsResourceWithRawResponse:
+        """
+        Bindings of a check to an alert channel, each carrying its own
+        notify-on-failure / notify-on-recovery flags.
+        """
+        from .resources.alert_subscriptions import AsyncAlertSubscriptionsResourceWithRawResponse
+
+        return AsyncAlertSubscriptionsResourceWithRawResponse(self._client.alert_subscriptions)
+
+    @cached_property
+    def maintenance_windows(self) -> maintenance_windows.AsyncMaintenanceWindowsResourceWithRawResponse:
+        """
+        Account-scoped windows that pause execution of their targeted
+        checks for the scheduled interval(s); paused runs are not recorded
+        and never count against uptime.
+        """
+        from .resources.maintenance_windows import AsyncMaintenanceWindowsResourceWithRawResponse
+
+        return AsyncMaintenanceWindowsResourceWithRawResponse(self._client.maintenance_windows)
+
+    @cached_property
     def balance(self) -> balance.AsyncBalanceResourceWithRawResponse:
-        """Run-credit balance + Stripe Checkout for top-ups."""
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
         from .resources.balance import AsyncBalanceResourceWithRawResponse
 
         return AsyncBalanceResourceWithRawResponse(self._client.balance)
 
     @cached_property
     def checkout_sessions(self) -> checkout_sessions.AsyncCheckoutSessionsResourceWithRawResponse:
-        """Run-credit balance + Stripe Checkout for top-ups."""
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
         from .resources.checkout_sessions import AsyncCheckoutSessionsResourceWithRawResponse
 
         return AsyncCheckoutSessionsResourceWithRawResponse(self._client.checkout_sessions)
+
+    @cached_property
+    def purchases(self) -> purchases.AsyncPurchasesResourceWithRawResponse:
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
+        from .resources.purchases import AsyncPurchasesResourceWithRawResponse
+
+        return AsyncPurchasesResourceWithRawResponse(self._client.purchases)
+
+    @cached_property
+    def members(self) -> members.AsyncMembersResourceWithRawResponse:
+        """Manage who has access to an account and at what role
+        (PR-Members/2).
+
+        Five roles: owner / admin / member / billing /
+        viewer. Owner is the strict superset of all other roles' scopes;
+        every account always has at least one owner.
+        """
+        from .resources.members import AsyncMembersResourceWithRawResponse
+
+        return AsyncMembersResourceWithRawResponse(self._client.members)
+
+    @cached_property
+    def locations(self) -> locations.AsyncLocationsResourceWithRawResponse:
+        """
+        Catalog of (provider, location) deployments Simple Checks runs
+        checks from, with geographic metadata + live status. Used to
+        drive the region picker and the dashboard's locations map.
+        """
+        from .resources.locations import AsyncLocationsResourceWithRawResponse
+
+        return AsyncLocationsResourceWithRawResponse(self._client.locations)
+
+    @cached_property
+    def pricing(self) -> pricing.AsyncPricingResourceWithRawResponse:
+        """
+        Active token-pricing table: per-check-type weights and the
+        customer-facing provider cost multipliers. Reads are free.
+        """
+        from .resources.pricing import AsyncPricingResourceWithRawResponse
+
+        return AsyncPricingResourceWithRawResponse(self._client.pricing)
 
 
 class SimpleChecksWithStreamedResponse:
@@ -735,18 +1049,91 @@ class SimpleChecksWithStreamedResponse:
         return KeysResourceWithStreamingResponse(self._client.keys)
 
     @cached_property
+    def alert_channels(self) -> alert_channels.AlertChannelsResourceWithStreamingResponse:
+        """
+        Reusable, account-scoped notification destinations (webhook,
+        Slack, Discord, Teams, PagerDuty, Opsgenie, email). One channel
+        can serve many checks. Includes a test-fire endpoint.
+        """
+        from .resources.alert_channels import AlertChannelsResourceWithStreamingResponse
+
+        return AlertChannelsResourceWithStreamingResponse(self._client.alert_channels)
+
+    @cached_property
+    def alert_subscriptions(self) -> alert_subscriptions.AlertSubscriptionsResourceWithStreamingResponse:
+        """
+        Bindings of a check to an alert channel, each carrying its own
+        notify-on-failure / notify-on-recovery flags.
+        """
+        from .resources.alert_subscriptions import AlertSubscriptionsResourceWithStreamingResponse
+
+        return AlertSubscriptionsResourceWithStreamingResponse(self._client.alert_subscriptions)
+
+    @cached_property
+    def maintenance_windows(self) -> maintenance_windows.MaintenanceWindowsResourceWithStreamingResponse:
+        """
+        Account-scoped windows that pause execution of their targeted
+        checks for the scheduled interval(s); paused runs are not recorded
+        and never count against uptime.
+        """
+        from .resources.maintenance_windows import MaintenanceWindowsResourceWithStreamingResponse
+
+        return MaintenanceWindowsResourceWithStreamingResponse(self._client.maintenance_windows)
+
+    @cached_property
     def balance(self) -> balance.BalanceResourceWithStreamingResponse:
-        """Run-credit balance + Stripe Checkout for top-ups."""
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
         from .resources.balance import BalanceResourceWithStreamingResponse
 
         return BalanceResourceWithStreamingResponse(self._client.balance)
 
     @cached_property
     def checkout_sessions(self) -> checkout_sessions.CheckoutSessionsResourceWithStreamingResponse:
-        """Run-credit balance + Stripe Checkout for top-ups."""
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
         from .resources.checkout_sessions import CheckoutSessionsResourceWithStreamingResponse
 
         return CheckoutSessionsResourceWithStreamingResponse(self._client.checkout_sessions)
+
+    @cached_property
+    def purchases(self) -> purchases.PurchasesResourceWithStreamingResponse:
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
+        from .resources.purchases import PurchasesResourceWithStreamingResponse
+
+        return PurchasesResourceWithStreamingResponse(self._client.purchases)
+
+    @cached_property
+    def members(self) -> members.MembersResourceWithStreamingResponse:
+        """Manage who has access to an account and at what role
+        (PR-Members/2).
+
+        Five roles: owner / admin / member / billing /
+        viewer. Owner is the strict superset of all other roles' scopes;
+        every account always has at least one owner.
+        """
+        from .resources.members import MembersResourceWithStreamingResponse
+
+        return MembersResourceWithStreamingResponse(self._client.members)
+
+    @cached_property
+    def locations(self) -> locations.LocationsResourceWithStreamingResponse:
+        """
+        Catalog of (provider, location) deployments Simple Checks runs
+        checks from, with geographic metadata + live status. Used to
+        drive the region picker and the dashboard's locations map.
+        """
+        from .resources.locations import LocationsResourceWithStreamingResponse
+
+        return LocationsResourceWithStreamingResponse(self._client.locations)
+
+    @cached_property
+    def pricing(self) -> pricing.PricingResourceWithStreamingResponse:
+        """
+        Active token-pricing table: per-check-type weights and the
+        customer-facing provider cost multipliers. Reads are free.
+        """
+        from .resources.pricing import PricingResourceWithStreamingResponse
+
+        return PricingResourceWithStreamingResponse(self._client.pricing)
 
 
 class AsyncSimpleChecksWithStreamedResponse:
@@ -791,18 +1178,91 @@ class AsyncSimpleChecksWithStreamedResponse:
         return AsyncKeysResourceWithStreamingResponse(self._client.keys)
 
     @cached_property
+    def alert_channels(self) -> alert_channels.AsyncAlertChannelsResourceWithStreamingResponse:
+        """
+        Reusable, account-scoped notification destinations (webhook,
+        Slack, Discord, Teams, PagerDuty, Opsgenie, email). One channel
+        can serve many checks. Includes a test-fire endpoint.
+        """
+        from .resources.alert_channels import AsyncAlertChannelsResourceWithStreamingResponse
+
+        return AsyncAlertChannelsResourceWithStreamingResponse(self._client.alert_channels)
+
+    @cached_property
+    def alert_subscriptions(self) -> alert_subscriptions.AsyncAlertSubscriptionsResourceWithStreamingResponse:
+        """
+        Bindings of a check to an alert channel, each carrying its own
+        notify-on-failure / notify-on-recovery flags.
+        """
+        from .resources.alert_subscriptions import AsyncAlertSubscriptionsResourceWithStreamingResponse
+
+        return AsyncAlertSubscriptionsResourceWithStreamingResponse(self._client.alert_subscriptions)
+
+    @cached_property
+    def maintenance_windows(self) -> maintenance_windows.AsyncMaintenanceWindowsResourceWithStreamingResponse:
+        """
+        Account-scoped windows that pause execution of their targeted
+        checks for the scheduled interval(s); paused runs are not recorded
+        and never count against uptime.
+        """
+        from .resources.maintenance_windows import AsyncMaintenanceWindowsResourceWithStreamingResponse
+
+        return AsyncMaintenanceWindowsResourceWithStreamingResponse(self._client.maintenance_windows)
+
+    @cached_property
     def balance(self) -> balance.AsyncBalanceResourceWithStreamingResponse:
-        """Run-credit balance + Stripe Checkout for top-ups."""
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
         from .resources.balance import AsyncBalanceResourceWithStreamingResponse
 
         return AsyncBalanceResourceWithStreamingResponse(self._client.balance)
 
     @cached_property
     def checkout_sessions(self) -> checkout_sessions.AsyncCheckoutSessionsResourceWithStreamingResponse:
-        """Run-credit balance + Stripe Checkout for top-ups."""
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
         from .resources.checkout_sessions import AsyncCheckoutSessionsResourceWithStreamingResponse
 
         return AsyncCheckoutSessionsResourceWithStreamingResponse(self._client.checkout_sessions)
+
+    @cached_property
+    def purchases(self) -> purchases.AsyncPurchasesResourceWithStreamingResponse:
+        """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
+        from .resources.purchases import AsyncPurchasesResourceWithStreamingResponse
+
+        return AsyncPurchasesResourceWithStreamingResponse(self._client.purchases)
+
+    @cached_property
+    def members(self) -> members.AsyncMembersResourceWithStreamingResponse:
+        """Manage who has access to an account and at what role
+        (PR-Members/2).
+
+        Five roles: owner / admin / member / billing /
+        viewer. Owner is the strict superset of all other roles' scopes;
+        every account always has at least one owner.
+        """
+        from .resources.members import AsyncMembersResourceWithStreamingResponse
+
+        return AsyncMembersResourceWithStreamingResponse(self._client.members)
+
+    @cached_property
+    def locations(self) -> locations.AsyncLocationsResourceWithStreamingResponse:
+        """
+        Catalog of (provider, location) deployments Simple Checks runs
+        checks from, with geographic metadata + live status. Used to
+        drive the region picker and the dashboard's locations map.
+        """
+        from .resources.locations import AsyncLocationsResourceWithStreamingResponse
+
+        return AsyncLocationsResourceWithStreamingResponse(self._client.locations)
+
+    @cached_property
+    def pricing(self) -> pricing.AsyncPricingResourceWithStreamingResponse:
+        """
+        Active token-pricing table: per-check-type weights and the
+        customer-facing provider cost multipliers. Reads are free.
+        """
+        from .resources.pricing import AsyncPricingResourceWithStreamingResponse
+
+        return AsyncPricingResourceWithStreamingResponse(self._client.pricing)
 
 
 Client = SimpleChecks

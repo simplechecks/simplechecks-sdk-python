@@ -15,7 +15,7 @@ from .alerts import (
     AsyncAlertsResourceWithStreamingResponse,
 )
 from ...types import check_list_params, check_create_params, check_update_params
-from ..._types import Body, Omit, Query, Headers, NoneType, NotGiven, omit, not_given
+from ..._types import Body, Omit, Query, Headers, NoneType, NotGiven, SequenceNotStr, omit, not_given
 from ..._utils import path_template, maybe_transform, async_maybe_transform
 from ..._compat import cached_property
 from ..._resource import SyncAPIResource, AsyncAPIResource
@@ -37,7 +37,12 @@ class ChecksResource(SyncAPIResource):
 
     @cached_property
     def alerts(self) -> AlertsResource:
-        """Per-check alert configuration + test-fire endpoint (PR-Alerts/1)."""
+        """
+        Per-check alert settings: consecutive-failure threshold and the
+        M-of-N consensus parameters. Notification destinations are
+        reusable account-scoped resources under `alert-channels`, bound to
+        checks via `alert-subscriptions`.
+        """
         return AlertsResource(self._client)
 
     @cached_property
@@ -63,14 +68,15 @@ class ChecksResource(SyncAPIResource):
         self,
         *,
         enabled: bool,
-        location: str,
         name: str,
-        provider: str,
         schedule: str,
         target_url: str,
         type: str,
         artifact_url: str | Omit = omit,
         config: Dict[str, object] | Omit = omit,
+        location: str | Omit = omit,
+        locations: SequenceNotStr[str] | Omit = omit,
+        provider: str | Omit = omit,
         timeout_ms: int | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
@@ -84,9 +90,14 @@ class ChecksResource(SyncAPIResource):
         `location`. Requires the `checks:write` scope.
 
         Args:
-          location: Provider-specific region/location.
+          location: Legacy; see `provider`.
 
-          provider: Cloud provider (`mock`, `ec2`, `ovh`, `azure`, `gcp`, `hetzner`).
+          locations: Preferred: array of wire-form ids (`aws:us-east-1`). Element 0 is the
+              deterministic primary. Each entry must be in the deployment catalog returned by
+              `GET /v1/locations`.
+
+          provider: Legacy single-location shape. Translated server-side to
+              `locations=[<provider>:<location>]`. Kept for one release cycle.
 
           extra_headers: Send extra headers
 
@@ -101,14 +112,15 @@ class ChecksResource(SyncAPIResource):
             body=maybe_transform(
                 {
                     "enabled": enabled,
-                    "location": location,
                     "name": name,
-                    "provider": provider,
                     "schedule": schedule,
                     "target_url": target_url,
                     "type": type,
                     "artifact_url": artifact_url,
                     "config": config,
+                    "location": location,
+                    "locations": locations,
+                    "provider": provider,
                     "timeout_ms": timeout_ms,
                 },
                 check_create_params.CheckCreateParams,
@@ -161,6 +173,7 @@ class ChecksResource(SyncAPIResource):
         artifact_url: str | Omit = omit,
         config: Dict[str, object] | Omit = omit,
         enabled: bool | Omit = omit,
+        locations: SequenceNotStr[str] | Omit = omit,
         name: str | Omit = omit,
         schedule: str | Omit = omit,
         target_url: str | Omit = omit,
@@ -179,6 +192,9 @@ class ChecksResource(SyncAPIResource):
         the `checks:write` scope.
 
         Args:
+          locations: Replace the location set. nil-array = leave unchanged. Each entry must be in the
+              deployment catalog (`GET /v1/locations`).
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -196,6 +212,7 @@ class ChecksResource(SyncAPIResource):
                     "artifact_url": artifact_url,
                     "config": config,
                     "enabled": enabled,
+                    "locations": locations,
                     "name": name,
                     "schedule": schedule,
                     "target_url": target_url,
@@ -301,7 +318,12 @@ class AsyncChecksResource(AsyncAPIResource):
 
     @cached_property
     def alerts(self) -> AsyncAlertsResource:
-        """Per-check alert configuration + test-fire endpoint (PR-Alerts/1)."""
+        """
+        Per-check alert settings: consecutive-failure threshold and the
+        M-of-N consensus parameters. Notification destinations are
+        reusable account-scoped resources under `alert-channels`, bound to
+        checks via `alert-subscriptions`.
+        """
         return AsyncAlertsResource(self._client)
 
     @cached_property
@@ -327,14 +349,15 @@ class AsyncChecksResource(AsyncAPIResource):
         self,
         *,
         enabled: bool,
-        location: str,
         name: str,
-        provider: str,
         schedule: str,
         target_url: str,
         type: str,
         artifact_url: str | Omit = omit,
         config: Dict[str, object] | Omit = omit,
+        location: str | Omit = omit,
+        locations: SequenceNotStr[str] | Omit = omit,
+        provider: str | Omit = omit,
         timeout_ms: int | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
@@ -348,9 +371,14 @@ class AsyncChecksResource(AsyncAPIResource):
         `location`. Requires the `checks:write` scope.
 
         Args:
-          location: Provider-specific region/location.
+          location: Legacy; see `provider`.
 
-          provider: Cloud provider (`mock`, `ec2`, `ovh`, `azure`, `gcp`, `hetzner`).
+          locations: Preferred: array of wire-form ids (`aws:us-east-1`). Element 0 is the
+              deterministic primary. Each entry must be in the deployment catalog returned by
+              `GET /v1/locations`.
+
+          provider: Legacy single-location shape. Translated server-side to
+              `locations=[<provider>:<location>]`. Kept for one release cycle.
 
           extra_headers: Send extra headers
 
@@ -365,14 +393,15 @@ class AsyncChecksResource(AsyncAPIResource):
             body=await async_maybe_transform(
                 {
                     "enabled": enabled,
-                    "location": location,
                     "name": name,
-                    "provider": provider,
                     "schedule": schedule,
                     "target_url": target_url,
                     "type": type,
                     "artifact_url": artifact_url,
                     "config": config,
+                    "location": location,
+                    "locations": locations,
+                    "provider": provider,
                     "timeout_ms": timeout_ms,
                 },
                 check_create_params.CheckCreateParams,
@@ -425,6 +454,7 @@ class AsyncChecksResource(AsyncAPIResource):
         artifact_url: str | Omit = omit,
         config: Dict[str, object] | Omit = omit,
         enabled: bool | Omit = omit,
+        locations: SequenceNotStr[str] | Omit = omit,
         name: str | Omit = omit,
         schedule: str | Omit = omit,
         target_url: str | Omit = omit,
@@ -443,6 +473,9 @@ class AsyncChecksResource(AsyncAPIResource):
         the `checks:write` scope.
 
         Args:
+          locations: Replace the location set. nil-array = leave unchanged. Each entry must be in the
+              deployment catalog (`GET /v1/locations`).
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -460,6 +493,7 @@ class AsyncChecksResource(AsyncAPIResource):
                     "artifact_url": artifact_url,
                     "config": config,
                     "enabled": enabled,
+                    "locations": locations,
                     "name": name,
                     "schedule": schedule,
                     "target_url": target_url,
@@ -582,7 +616,12 @@ class ChecksResourceWithRawResponse:
 
     @cached_property
     def alerts(self) -> AlertsResourceWithRawResponse:
-        """Per-check alert configuration + test-fire endpoint (PR-Alerts/1)."""
+        """
+        Per-check alert settings: consecutive-failure threshold and the
+        M-of-N consensus parameters. Notification destinations are
+        reusable account-scoped resources under `alert-channels`, bound to
+        checks via `alert-subscriptions`.
+        """
         return AlertsResourceWithRawResponse(self._checks.alerts)
 
 
@@ -608,7 +647,12 @@ class AsyncChecksResourceWithRawResponse:
 
     @cached_property
     def alerts(self) -> AsyncAlertsResourceWithRawResponse:
-        """Per-check alert configuration + test-fire endpoint (PR-Alerts/1)."""
+        """
+        Per-check alert settings: consecutive-failure threshold and the
+        M-of-N consensus parameters. Notification destinations are
+        reusable account-scoped resources under `alert-channels`, bound to
+        checks via `alert-subscriptions`.
+        """
         return AsyncAlertsResourceWithRawResponse(self._checks.alerts)
 
 
@@ -634,7 +678,12 @@ class ChecksResourceWithStreamingResponse:
 
     @cached_property
     def alerts(self) -> AlertsResourceWithStreamingResponse:
-        """Per-check alert configuration + test-fire endpoint (PR-Alerts/1)."""
+        """
+        Per-check alert settings: consecutive-failure threshold and the
+        M-of-N consensus parameters. Notification destinations are
+        reusable account-scoped resources under `alert-channels`, bound to
+        checks via `alert-subscriptions`.
+        """
         return AlertsResourceWithStreamingResponse(self._checks.alerts)
 
 
@@ -660,5 +709,10 @@ class AsyncChecksResourceWithStreamingResponse:
 
     @cached_property
     def alerts(self) -> AsyncAlertsResourceWithStreamingResponse:
-        """Per-check alert configuration + test-fire endpoint (PR-Alerts/1)."""
+        """
+        Per-check alert settings: consecutive-failure threshold and the
+        M-of-N consensus parameters. Notification destinations are
+        reusable account-scoped resources under `alert-channels`, bound to
+        checks via `alert-subscriptions`.
+        """
         return AsyncAlertsResourceWithStreamingResponse(self._checks.alerts)

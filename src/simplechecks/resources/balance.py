@@ -20,7 +20,7 @@ __all__ = ["BalanceResource", "AsyncBalanceResource"]
 
 
 class BalanceResource(SyncAPIResource):
-    """Run-credit balance + Stripe Checkout for top-ups."""
+    """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
 
     @cached_property
     def with_raw_response(self) -> BalanceResourceWithRawResponse:
@@ -66,7 +66,7 @@ class BalanceResource(SyncAPIResource):
 
 
 class AsyncBalanceResource(AsyncAPIResource):
-    """Run-credit balance + Stripe Checkout for top-ups."""
+    """Run-credit balance, Stripe Checkout top-ups, and purchase history."""
 
     @cached_property
     def with_raw_response(self) -> AsyncBalanceResourceWithRawResponse:

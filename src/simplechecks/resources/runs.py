@@ -17,10 +17,11 @@ from .._response import (
     async_to_raw_response_wrapper,
     async_to_streamed_response_wrapper,
 )
-from ..types.run import Run
-from .._base_client import make_request_options
+from ..pagination import SyncRunsCursor, AsyncRunsCursor
+from .._base_client import AsyncPaginator, make_request_options
 from .._decoders.jsonl import JSONLDecoder, AsyncJSONLDecoder
-from ..types.run_list_response import RunListResponse
+from ..types.run_detail import RunDetail
+from ..types.run_list_item import RunListItem
 from ..types.run_logs_response import RunLogsResponse
 from ..types.run_aggregates_response import RunAggregatesResponse
 
@@ -59,11 +60,12 @@ class RunsResource(SyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> Run:
-        """Returns the run matching `id`.
-
-        The id's embedded UUIDv7 timestamp scopes the
-        server-side scan to one day. Requires the `runs:read` scope.
+    ) -> RunDetail:
+        """
+        Returns the full record for the run matching `id` — the slim list fields plus
+        the run's `metadata` (a JSON object) and a list of downloadable `artifacts`
+        (each an opaque URL). Runs are retained for 30 days; an aged-out or unknown id
+        returns 404. Requires the `runs:read` scope.
 
         Args:
           extra_headers: Send extra headers
@@ -81,39 +83,52 @@ class RunsResource(SyncAPIResource):
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=Run,
+            cast_to=RunDetail,
         )
 
     def list(
         self,
         *,
         check_id: str | Omit = omit,
+        cursor: str | Omit = omit,
         limit: int | Omit = omit,
-        offset: int | Omit = omit,
+        location: str | Omit = omit,
         since: int | Omit = omit,
         status: Literal["PASS", "FAIL", "ERROR", "TIMEOUT"] | Omit = omit,
+        until: int | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> RunListResponse:
+    ) -> SyncRunsCursor[RunListItem]:
         """Returns runs ordered by start time descending.
 
         Filter with `check_id`, `status`,
-        `since` (unix-millis lower bound). `limit` defaults to 50 (max 200); `offset`
-        paginates within the filtered set. Requires the `runs:read` scope.
+        `location`, and a `since`/`until` unix-millis window. `limit` defaults to 50
+        (max 200). Pages are cursor-based: when more rows remain, the response carries a
+        `next_cursor` — pass it back as `cursor` to fetch the next page. Requires the
+        `runs:read` scope.
 
-        Run records come from the parquet result files garrisons write to S3; this
-        endpoint scans up to the last 7 days by default. Older runs are not retained.
+        Run records are served from the central runs table; runs are retained for 30
+        days. Each record carries structured `provider`/`region`/`location` fields and a
+        short `error_summary` rather than infrastructure internals.
 
         Args:
           check_id: Filter to a single check (UUID; matches `Check.id`).
 
-          since: Lower bound on `started_at_unix_ms`. Server clamps to a 7-day window.
+          cursor: Opaque pagination token from the previous page's `next_cursor`.
+
+          limit: Page size; defaults to 50, max 200.
+
+          location: Filter to a single provider-native region id (e.g. `fsn1`).
+
+          since: Lower bound on `started_at_unix_ms` (inclusive).
 
           status: Filter to a single execution status.
+
+          until: Upper bound on `started_at_unix_ms` (inclusive).
 
           extra_headers: Send extra headers
 
@@ -123,8 +138,9 @@ class RunsResource(SyncAPIResource):
 
           timeout: Override the client-level default timeout for this request, in seconds
         """
-        return self._get(
+        return self._get_api_list(
             "/v1/runs",
+            page=SyncRunsCursor[RunListItem],
             options=make_request_options(
                 extra_headers=extra_headers,
                 extra_query=extra_query,
@@ -133,15 +149,17 @@ class RunsResource(SyncAPIResource):
                 query=maybe_transform(
                     {
                         "check_id": check_id,
+                        "cursor": cursor,
                         "limit": limit,
-                        "offset": offset,
+                        "location": location,
                         "since": since,
                         "status": status,
+                        "until": until,
                     },
                     run_list_params.RunListParams,
                 ),
             ),
-            cast_to=RunListResponse,
+            model=RunListItem,
         )
 
     def aggregates(
@@ -309,11 +327,12 @@ class AsyncRunsResource(AsyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> Run:
-        """Returns the run matching `id`.
-
-        The id's embedded UUIDv7 timestamp scopes the
-        server-side scan to one day. Requires the `runs:read` scope.
+    ) -> RunDetail:
+        """
+        Returns the full record for the run matching `id` — the slim list fields plus
+        the run's `metadata` (a JSON object) and a list of downloadable `artifacts`
+        (each an opaque URL). Runs are retained for 30 days; an aged-out or unknown id
+        returns 404. Requires the `runs:read` scope.
 
         Args:
           extra_headers: Send extra headers
@@ -331,39 +350,52 @@ class AsyncRunsResource(AsyncAPIResource):
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=Run,
+            cast_to=RunDetail,
         )
 
-    async def list(
+    def list(
         self,
         *,
         check_id: str | Omit = omit,
+        cursor: str | Omit = omit,
         limit: int | Omit = omit,
-        offset: int | Omit = omit,
+        location: str | Omit = omit,
         since: int | Omit = omit,
         status: Literal["PASS", "FAIL", "ERROR", "TIMEOUT"] | Omit = omit,
+        until: int | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> RunListResponse:
+    ) -> AsyncPaginator[RunListItem, AsyncRunsCursor[RunListItem]]:
         """Returns runs ordered by start time descending.
 
         Filter with `check_id`, `status`,
-        `since` (unix-millis lower bound). `limit` defaults to 50 (max 200); `offset`
-        paginates within the filtered set. Requires the `runs:read` scope.
+        `location`, and a `since`/`until` unix-millis window. `limit` defaults to 50
+        (max 200). Pages are cursor-based: when more rows remain, the response carries a
+        `next_cursor` — pass it back as `cursor` to fetch the next page. Requires the
+        `runs:read` scope.
 
-        Run records come from the parquet result files garrisons write to S3; this
-        endpoint scans up to the last 7 days by default. Older runs are not retained.
+        Run records are served from the central runs table; runs are retained for 30
+        days. Each record carries structured `provider`/`region`/`location` fields and a
+        short `error_summary` rather than infrastructure internals.
 
         Args:
           check_id: Filter to a single check (UUID; matches `Check.id`).
 
-          since: Lower bound on `started_at_unix_ms`. Server clamps to a 7-day window.
+          cursor: Opaque pagination token from the previous page's `next_cursor`.
+
+          limit: Page size; defaults to 50, max 200.
+
+          location: Filter to a single provider-native region id (e.g. `fsn1`).
+
+          since: Lower bound on `started_at_unix_ms` (inclusive).
 
           status: Filter to a single execution status.
+
+          until: Upper bound on `started_at_unix_ms` (inclusive).
 
           extra_headers: Send extra headers
 
@@ -373,25 +405,28 @@ class AsyncRunsResource(AsyncAPIResource):
 
           timeout: Override the client-level default timeout for this request, in seconds
         """
-        return await self._get(
+        return self._get_api_list(
             "/v1/runs",
+            page=AsyncRunsCursor[RunListItem],
             options=make_request_options(
                 extra_headers=extra_headers,
                 extra_query=extra_query,
                 extra_body=extra_body,
                 timeout=timeout,
-                query=await async_maybe_transform(
+                query=maybe_transform(
                     {
                         "check_id": check_id,
+                        "cursor": cursor,
                         "limit": limit,
-                        "offset": offset,
+                        "location": location,
                         "since": since,
                         "status": status,
+                        "until": until,
                     },
                     run_list_params.RunListParams,
                 ),
             ),
-            cast_to=RunListResponse,
+            model=RunListItem,
         )
 
     async def aggregates(

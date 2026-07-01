@@ -5,6 +5,8 @@ from __future__ import annotations
 from typing import Dict
 from typing_extensions import TypedDict
 
+from .._types import SequenceNotStr
+
 __all__ = ["CheckUpdateParams"]
 
 
@@ -14,6 +16,13 @@ class CheckUpdateParams(TypedDict, total=False):
     config: Dict[str, object]
 
     enabled: bool
+
+    locations: SequenceNotStr[str]
+    """Replace the location set.
+
+    nil-array = leave unchanged. Each entry must be in the deployment catalog
+    (`GET /v1/locations`).
+    """
 
     name: str
 

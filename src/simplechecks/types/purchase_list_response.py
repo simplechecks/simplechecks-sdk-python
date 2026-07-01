@@ -2,11 +2,11 @@
 
 from typing import List
 
-from .run import Run
 from .._models import BaseModel
+from .purchase import Purchase
 
-__all__ = ["RunListResponse"]
+__all__ = ["PurchaseListResponse"]
 
 
-class RunListResponse(BaseModel):
-    runs: List[Run]
+class PurchaseListResponse(BaseModel):
+    purchases: List[Purchase]
