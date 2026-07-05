@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.4.1 (2026-07-05)
+
+Full Changelog: [v0.4.0...v0.4.1](https://github.com/simplechecks/simplechecks-sdk-python/compare/v0.4.0...v0.4.1)
+
+### Bug Fixes
+
+* **ci:** pin release-please action to v3.8.1 ([a82151e](https://github.com/simplechecks/simplechecks-sdk-python/commit/a82151eb6902e305e48268677b6e4d82a108182c))
+
+
+### Chores
+
+* **ci:** add stlc release workflows (U9) ([37618e8](https://github.com/simplechecks/simplechecks-sdk-python/commit/37618e86765263e1eae28d90d41074e616f4520c))
+
 ## 0.4.0 (2026-07-01)
 
 Full Changelog: [v0.3.0...v0.4.0](https://github.com/simplechecks/simplechecks-sdk-python/compare/v0.3.0...v0.4.0)
