@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.5.0 (2026-08-20)
+
+Full Changelog: [v0.4.0...v0.5.0](https://github.com/simplechecks/simplechecks-sdk-python/compare/v0.4.0...v0.5.0)
+
+### Features
+
+* **api:** api update ([2038ea2](https://github.com/simplechecks/simplechecks-sdk-python/commit/2038ea25e73379730b109d61f6b663cad7cc8772))
+
+
+### Bug Fixes
+
+* **ci:** pin release-please action to v3.8.1 ([a82151e](https://github.com/simplechecks/simplechecks-sdk-python/commit/a82151eb6902e305e48268677b6e4d82a108182c))
+* **ci:** supply release-type to release-please ([4b25861](https://github.com/simplechecks/simplechecks-sdk-python/commit/4b258619582c40af5ce300f79e1c5d18f875d245))
+* **internal:** resolve build failures ([d2634aa](https://github.com/simplechecks/simplechecks-sdk-python/commit/d2634aabfd628ca47fc37e2ce235172454cc37eb))
+
+
+### Chores
+
+* **ci:** add stlc release workflows (U9) ([37618e8](https://github.com/simplechecks/simplechecks-sdk-python/commit/37618e86765263e1eae28d90d41074e616f4520c))
+* **internal:** allow the mock server port to be set with STAINLESS_MOCK_PORT ([dd2986d](https://github.com/simplechecks/simplechecks-sdk-python/commit/dd2986d8228b51ab456bfee8495f009ecbf9597b))
+
+
+### Documentation
+
+* **api:** clarify getCheck response body ([4017eb1](https://github.com/simplechecks/simplechecks-sdk-python/commit/4017eb1dcdf7dfdb14250a843920c753384865d6))
+
 ## 0.4.0 (2026-07-01)
 
 Full Changelog: [v0.3.0...v0.4.0](https://github.com/simplechecks/simplechecks-sdk-python/compare/v0.3.0...v0.4.0)

@@ -145,7 +145,9 @@ class ChecksResource(SyncAPIResource):
         """Returns the check with the given id.
 
         404 if no such check exists for the calling
-        account. Requires the `checks:read` scope.
+        account. Requires the `checks:read` scope. The response carries the check's full
+        saved configuration — schedule, target, timeout, and enabled state — plus its
+        created/updated timestamps.
 
         Args:
           extra_headers: Send extra headers
@@ -426,7 +428,9 @@ class AsyncChecksResource(AsyncAPIResource):
         """Returns the check with the given id.
 
         404 if no such check exists for the calling
-        account. Requires the `checks:read` scope.
+        account. Requires the `checks:read` scope. The response carries the check's full
+        saved configuration — schedule, target, timeout, and enabled state — plus its
+        created/updated timestamps.
 
         Args:
           extra_headers: Send extra headers
